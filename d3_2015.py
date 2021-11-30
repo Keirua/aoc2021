@@ -21,7 +21,27 @@ def count_houses(input):
 
     return len(set(houses))
 
+def count_houses_with_robo(input):
+    xs, ys = (0, 0)
+    xr, yr = (0, 0)
+    houses = [(0, 0)]
+    for i,m in enumerate(input):
+        dx, dy = mapping[m]
+        if i%2 == 0:
+            xs, ys = xs+dx, ys+dy
+            houses.append((xs, ys))
+        else:
+            xr, yr = xr+dx, yr+dy
+            houses.append((xr,yr))
+
+    return len(set(houses))
+
 assert(count_houses(">") == 2)
 assert(count_houses("^>v<") == 4)
 assert(count_houses("^v^v^v^v^v") == 2)
 print(count_houses(input))
+
+assert(count_houses_with_robo("^v") == 3)
+assert(count_houses_with_robo("^>v<") == 3)
+assert(count_houses_with_robo("^v^v^v^v^v") == 11)
+print(count_houses_with_robo(input))
