@@ -102,16 +102,14 @@ def download_challenge(year, day, session_cookie):
         shutil.copyfileobj(response, out_file)
 
 def get_template(day, year):
-    return f"""import cli
-import itertools as it
-import pprint
-import re
+    return f"""import aoc
+import re, pprint, itertools as it
 pp = pprint.PrettyPrinter(indent=4)
 
-input = cli.input_as_string(cli.challenge_filename({day}, {year}))
-lines = cli.as_lines(input)
+input = aoc.input_as_string(aoc.challenge_filename({day}, {year}))
+lines = aoc.as_lines(input)
 
-print(lines)
+pp.pprint(lines)
 """
 
 if __name__ == "__main__":
