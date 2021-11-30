@@ -1,8 +1,7 @@
 #!/usr/bin/python3
 import aoc
 
-from itertools import product
-import re
+import itertools as it
 import pprint
 import re
 pp = pprint.PrettyPrinter(indent=4)
