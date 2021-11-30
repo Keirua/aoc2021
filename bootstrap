@@ -1,0 +1,57 @@
+#!/usr/bin/python3
+
+import argparse
+import datetime
+import configparser
+import urllib.request
+import shutil
+
+def download_challenge(year, day, session_cookie):
+    """
+    Downloads a challenge from AoC.
+    The url pattern is as follow:
+    https://adventofcode.com/2020/day/1/input
+    The header should contain a session cookie.
+    """
+
+    url = f"https://adventofcode.com/{year}/day/{day}/input"
+    file_name = f"input/{day}_{year}.txt"
+
+    request = urllib.request.Request(url)
+    request.add_header("Cookie", f"session={session_cookie}")
+
+    print(url)
+    with urllib.request.urlopen(request) as response, open(file_name, 'wb') as out_file:
+        shutil.copyfileobj(response, out_file)
+    print(f"challenge saved as {file_name} starts with:")
+
+
+def load_config(filename:str="settings.ini"):
+    config = configparser.ConfigParser()
+    config.read(filename)
+
+    return config["settings"]["session"], config["settings"]["year"]
+
+def get_current_year() -> int:
+    currentDateTime = datetime.datetime.now()
+    date = currentDateTime.date()
+    year = date.strftime("%Y")
+    return year
+
+def get_options():
+    description = "Downloads a challenge file"
+    argparser = argparse.ArgumentParser(description=description,
+                                        formatter_class=argparse
+                                        .RawTextHelpFormatter)
+    argparser.add_argument('-d', '--day', type=int, default=1)
+
+    options = argparser.parse_args()
+
+    return options
+
+
+if __name__ == '__main__':
+    session_cookie, year = load_config("settings.ini")
+    options = get_options()
+    print(year, options.day)
+    download_challenge(year, options.day, session_cookie)
