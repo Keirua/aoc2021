@@ -2,6 +2,7 @@ settings.ini
 venv/
 .idea
 input/
+wip/
 __pycache__/
 .env/
 .hypothesis/
