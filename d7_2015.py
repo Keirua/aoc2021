@@ -8,11 +8,14 @@ class Cpu:
     def __init__(self):
         self.data = {}
 
-    def run(self, lines):
+    def run(self, lines, is_part2=False):
         self.data = {}
         for line in lines:
             raw_operation, target = line.split(" -> ")
             self.data[target.strip()] = raw_operation
+        if is_part2:
+            # quick hack to solve part 2
+            self.data["b"] = "956"
 
     @functools.lru_cache()
     def get_value(self, key):
@@ -54,5 +57,10 @@ input = aoc.input_as_string(aoc.challenge_filename(7, 2015))
 lines = aoc.as_lines(input)
 cpu.run(test_lines)
 print(cpu.get_value("i"))
+
+cpu = Cpu()
 cpu.run(lines)
+print(cpu.get_value("a"))
+cpu = Cpu()
+cpu.run(lines, True)
 print(cpu.get_value("a"))
