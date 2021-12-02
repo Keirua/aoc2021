@@ -4,6 +4,7 @@ import sys
 import argparse
 import datetime
 import configparser
+import time
 import urllib.request
 import shutil
 import aoc
@@ -71,7 +72,10 @@ commit Commit a file from staging area to the local repository.
 
     def run(self):
         year, day = get_year_day()
+        t1 = time.time()
         os.system(f"python3 {code_filename(day, year)}")
+        t2 = time.time()
+        print(f"ran in {t2-t1}s")
 
     def template(self):
         year, day = get_year_day()

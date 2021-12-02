@@ -38,6 +38,16 @@ class LightGrid(Grid):
         for op in operations:
             self.apply(op)
 
+    def apply_light(self, op, x,y):
+        if op == "turn on":
+            self.set(x, y, 1)
+        elif op == "turn off":
+            self.set(x, y, 0)
+        elif op == "toggle":
+            self.set(x, y, 1 - self.get(x, y))
+        else:
+            raise ValueError(f"Invalid operation {op}")
+
     def apply(self, operation):
         op, p0, p1 = operation
 
@@ -46,26 +56,36 @@ class LightGrid(Grid):
 
         for x in range(x0, x1 + 1):
             for y in range(y0, y1 + 1):
-                if op == "turn on":
-                    self.set(x, y, 1)
-                elif op == "turn off":
-                    self.set(x, y, 0)
-                elif op == "toggle":
-                    self.set(x, y, 1 - g.get(x, y))
-                else:
-                    raise ValueError(f"Invalid operation {operation}")
+                self.apply_light(op, x, y)
 
+    def count_lit(self):
+        nb_lit = 0
+        for l in self.lines:
+            nb_lit += sum(l)
+        return nb_lit
+
+class LightGrid2(LightGrid):
+    def apply_light(self, op, x,y):
+        if op == "turn on":
+            self.set(x, y, self.get(x, y)+1)
+        elif op == "turn off":
+            self.set(x, y, max(0, self.get(x, y)-1))
+        elif op == "toggle":
+            self.set(x, y, self.get(x, y)+2)
+        else:
+            raise ValueError(f"Invalid operation {op}")
 
 input = aoc.input_as_string(aoc.challenge_filename(6, 2015))
 lines = aoc.as_lines(input)
 operations = parse(lines)
-g = LightGrid(1000)
-g.run(operations)
+# g = LightGrid(1000)
+# g.run(operations)
+# print(g.count_lit())
 
-nb_lit = 0
-for l in g.lines:
-    nb_lit += sum(l)
-print(nb_lit)
+# part 2
+g2 = LightGrid2(1000)
+g2.run(operations)
+print(g2.count_lit())
 
 # g = LightGrid(10)
 # print(g)
