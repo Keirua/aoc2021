@@ -81,7 +81,7 @@ commit Commit a file from staging area to the local repository.
             f.write(tpl)
 
 def code_filename(day, year):
-    return f"d{day}_{year}.py"
+    return f"{year}/d{day}_{year}.py"
 
 def download_challenge(year, day, session_cookie):
     """
