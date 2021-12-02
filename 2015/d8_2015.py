@@ -38,7 +38,35 @@ def part1(lines):
     #     print(count_chars(l))
     return (sum([len(l)-count_chars(l) for l in lines]))
 
+def encode2(s):
+    s2 = ""
+    for c in s:
+        if c == "\"":
+            s2 += "\\\""
+        elif c == "\\":
+            s2 += "\\\\"
+        else:
+            s2 += c
+    return "\"" + s2 + "\""
+
+# print(encode2('""'))
+# print(encode2('"abc"'))
+# print(encode2('"aaa\\"aaa"'))
+# print(encode2('"\\x27"'))
+# assert(encode2('""') == '"\"\""')
+
+def part2(lines):
+    # for l in lines:
+    #     print(len(l))
+    #
+    # print()
+    # for l in lines:
+    #     print(len(encode2(l)))
+    return (sum([len(encode2(l)) - len(l) for l in lines]))
+
 test_input = aoc.input_as_string("input/8_2015_test.txt")
 test_lines = aoc.as_lines(test_input)
-print(part1(test_lines))
-print(part1(lines))
+# print(part1(test_lines))
+print(part2(test_lines))
+# print(part1(lines))
+print(part2(lines))
