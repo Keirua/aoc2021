@@ -64,6 +64,7 @@ commit Commit a file from staging area to the local repository.
     def bootstrap(self):
         self.download()
         self.template()
+        self.run()
 
     def download(self):
         session_cookie = load_config("settings.ini")
@@ -80,7 +81,7 @@ commit Commit a file from staging area to the local repository.
     def template(self):
         year, day = get_year_day()
         tpl = get_template(day, year)
-        print(tpl)
+        # print(tpl)
         with open(code_filename(day, year), 'w') as f:
             f.write(tpl)
 
