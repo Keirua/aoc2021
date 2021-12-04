@@ -7,6 +7,11 @@ Different ideas for solving this problem:
  - use regex to write a large recursive solver: https://gist.github.com/mgiuffrida/f275912b9bd92a3f403e
  - use Z3 to solve the tree https://mobeigi.com/blog/capture-the-flag/advent-of-code/advent-of-code-day-7/
 
+# day 9 and 13
+
+Basically the same problem (a short travelling salesman problem).
+It was fun to use `itertools.permutations`, which does not come up very ofter.
+
 # 2015 day 10
 There was an interesting construct, where you have to implement a sequence
 of the form `n = f(n)`, then call it many times:
@@ -46,6 +51,45 @@ def look_and_say(input, nb_iterations=40):
     return len(final_value)
 ```
 
+# day 11
+
+The `inc_password` that generates the next password was fun to write:
+```python
+def next_char(c): return chr(ord(c)+1)
+def inc_password(p):
+    pos = len(p)-1
+    p2 = list(p)
+    carry = 1
+    while carry == 1:
+        if p2[pos] != 'z':
+            p2[pos] = next_char(p2[pos])
+            carry = 0
+        else:
+            p2[pos] = 'a'
+            pos -= 1
+            carry = 1
+            if pos < 0:
+                raise ValueError("Everything has been exhausted ! Overflow")
+
+    return "".join(p2)
+```
+
+# day 12
+
+Finding all the integers in a json object with a regex was so fast! So happy with this hack
+
+```python
+def part1(input):
+    """Finding all the integers is solved with a regex"""
+    ints = map(int, re.findall(r"(-?\d+)", input))
+    return sum(ints)
+```
+
+# day 15
+
+my initial attempt with brute force was very slow. We can use partitions:
+https://math.stackexchange.com/questions/217597/number-of-ways-to-write-n-as-a-sum-of-k-nonnegative-integers
+https://en.wikipedia.org/wiki/Partition_%28number_theory%29#Rank_and_Durfee_square
 
 # 2021
 
