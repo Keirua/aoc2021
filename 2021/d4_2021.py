@@ -89,9 +89,29 @@ def part1(drawns, grids):
             g.play(d)
             if g.is_won():
                 return g.score()*d
+from collections import deque
+def part2(drawns, grids):
+    drawns = deque(drawns)
+    d = None
+    last_grid = None
+    while len(grids) > 0:
+        d = drawns.popleft()
+        remaining_gs = []
+        for g in grids:
+            g.play(d)
+            if not g.is_won():
+                remaining_gs.append(g)
+            else:
+                last_grid = g
+        grids = remaining_gs
+    return last_grid.score()*d
 
 test_drawns, test_grids = parse(test_input)
 drawns, grids = parse(input)
 assert(part1(test_drawns, test_grids) == 4512)
+test_drawns, test_grids = parse(test_input)
+drawns, grids = parse(input)
+assert(part2(test_drawns, test_grids) == 1924)
 print(part1(drawns, grids))
+print(part2(drawns, grids))
 
