@@ -4,7 +4,6 @@ pp = pprint.PrettyPrinter(indent=4)
 
 input = aoc.input_as_string(aoc.challenge_filename(4, 2021))
 
-
 test_input = """7,4,9,5,11,17,23,2,0,14,21,24,10,16,13,6,15,25,12,22,18,20,8,19,3,26,1
 
 22 13 17 11  0
@@ -54,12 +53,45 @@ class BingoGrid(Grid):
             line = list(map(int, re.findall(r"(\d+)", grid_as_list[y])))
             for x in range(5):
                 self.set(x, y, line[x])
+    def play(self, v):
+        for x in range(5):
+            for y in range(5):
+                if self.get(x, y) == v:
+                    self.set(x, y, None)
+    def is_won(self):
+        for line in self.lines:
+            if any(line) == False:
+                return True
+        for x in range(5):
+            col = [line[x] for line in self.lines]
+            if any(col) == False:
+                return True
+        return False
+    def score(self):
+        non_nil_values = []
+        for x in range(5):
+            for y in range(5):
+                if self.get(x, y) is not None:
+                    non_nil_values.append(self.get(x,y))
+        return sum(non_nil_values)
 
-lines = aoc.as_lines(test_input)
-
-drawns = list(map(int, lines[0].split(",")))
-grids = [BingoGrid(lines[i:i+5]) for i in range(2, len(lines), 6)]
 
 
-# pp.pprint(lines)
-# pp.pprint(grids[0])
+def parse(input):
+    lines = aoc.as_lines(input)
+    drawns = list(map(int, lines[0].split(",")))
+    grids = [BingoGrid(lines[i:i+5]) for i in range(2, len(lines), 6)]
+    return drawns, grids
+
+def part1(drawns, grids):
+    for d in drawns:
+        for g in grids:
+            g.play(d)
+            if g.is_won():
+                return g.score()*d
+
+test_drawns, test_grids = parse(test_input)
+drawns, grids = parse(input)
+assert(part1(test_drawns, test_grids) == 4512)
+print(part1(drawns, grids))
+
