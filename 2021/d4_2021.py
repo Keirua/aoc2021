@@ -27,12 +27,11 @@ test_input = """7,4,9,5,11,17,23,2,0,14,21,24,10,16,13,6,15,25,12,22,18,20,8,19,
 
 class Grid:
     def __init__(self, w, h, value):
+        self.w = w
+        self.h = h
         self.lines = []
         for j in range(h):
-            curr_line = []
-            for i in range(w):
-                curr_line.append(value)
-            self.lines.append(curr_line)
+            self.lines.append([value for _ in range(w)])
 
     def set(self, x, y, v):
         self.lines[y][x] = v
@@ -40,11 +39,20 @@ class Grid:
     def get(self, x, y):
         return self.lines[y][x]
 
-    def __repr__(self):
-        s = ""
+    def all_coords(self):
+        for x in range(self.w):
+            for y in range(self.h):
+                yield (x, y)
+
+    def __str__(self):
+        """Display these values as a 2-D grid.
+        Inspired by norvig’s sudoku: http://norvig.com/sudoku.html
+        """
+        width = 1 + max(len(self.lines[y]) for y in range(self.h))
+        line = ""
         for l in self.lines:
-            s += " ".join(map(str,l)) + "\n"
-        return s
+            line += ''.join([str(c).center(width) for c in l]) + "\n"
+        return line
 
 class BingoGrid(Grid):
     def __init__(self, grid_as_list):
@@ -54,10 +62,10 @@ class BingoGrid(Grid):
             for x in range(5):
                 self.set(x, y, line[x])
     def play(self, v):
-        for x in range(5):
-            for y in range(5):
-                if self.get(x, y) == v:
-                    self.set(x, y, None)
+        for (x, y) in self.all_coords():
+            if self.get(x, y) == v:
+                self.set(x, y, None)
+
     def is_won(self):
         for line in self.lines:
             if any(line) == False:
@@ -67,13 +75,14 @@ class BingoGrid(Grid):
             if any(col) == False:
                 return True
         return False
+
     def score(self):
-        non_nil_values = []
-        for x in range(5):
-            for y in range(5):
-                if self.get(x, y) is not None:
-                    non_nil_values.append(self.get(x,y))
-        return sum(non_nil_values)
+        "The sum of the non nil values of the grid"
+        total = 0
+        for (x, y) in self.all_coords():
+            if self.get(x, y) is not None:
+                total += self.get(x,y)
+        return total
 
 
 
@@ -108,6 +117,8 @@ def part2(drawns, grids):
 
 test_drawns, test_grids = parse(test_input)
 drawns, grids = parse(input)
+# grids[0].set(1,1,None)
+# print(grids[0])
 assert(part1(test_drawns, test_grids) == 4512)
 test_drawns, test_grids = parse(test_input)
 drawns, grids = parse(input)

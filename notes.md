@@ -51,3 +51,8 @@ def look_and_say(input, nb_iterations=40):
 
  - day 1: implementation in Piet (an esoteric, visual, stack-based language), explained a bit: https://www.reddit.com/r/adventofcode/comments/r6v23p/day_1_part_1_a_solution_in_piet_a_language_where/
  - day 3: fun visualization with pygames: https://www.reddit.com/r/adventofcode/comments/r7x4yk/2021_day_3_part_2pygame_oxy_filter/
+
+## Day 4
+
+Quite happy with my (non-necessary) grid design that I’ve used in other problems already.
+Grid display (modified from `display` on http://norvig.com/sudoku.html) is quite versatile
