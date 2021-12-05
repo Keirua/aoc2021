@@ -26,6 +26,7 @@ class Line:
 
     def is_v(self): return self.p0.x == self.p1.x
     def is_h(self): return self.p0.y == self.p1.y
+    def is_diag(self): return abs(self.p0.y-self.p1.y) == abs(self.p1.x - self.p0.x)
 
     def all_h_or_v_points(self):
         if self.is_v():
@@ -36,6 +37,11 @@ class Line:
             min_x = min(self.p0.x, self.p1.x)
             max_x = max(self.p0.x, self.p1.x)
             return set([(x, self.p0.y) for x in range(min_x, max_x + 1)])
+        if self.is_diag():
+            nb_points = abs(self.p1.y - self.p0.y)
+            dx = (self.p1.x - self.p0.x)/nb_points
+            dy = (self.p1.y - self.p0.y)/nb_points
+            return set([(int(self.p0.x+delta*dx), int(self.p0.y+delta*dy)) for delta in range(nb_points+1)])
         raise ValueError("Impossibru!")
 
 def parse(input):
@@ -47,25 +53,10 @@ def parse(input):
         lines.append(Line(p0, p1))
     return lines
 
-def part1_v2(input):
-    lines = parse(input)
-    h_or_v_lines = [line for line in lines if line.is_v() or line.is_h()]
-    all_coords = []
-    overlapping = []
-    for l in h_or_v_lines:
-        for c in l.all_h_or_v_points():
-            if not c in all_coords:
-                all_coords.append(c)
-            else:
-                overlapping.append(c)
-    return len(set(overlapping))
-
-def part1_v3(input):
-    lines = parse(input)
-    h_or_v_lines = [line for line in lines if line.is_v() or line.is_h()]
+def count_intersections(lines):
     all_coords = set()
     overlapping = set()
-    for l in h_or_v_lines:
+    for l in lines:
         for c in l.all_h_or_v_points():
             if c in all_coords:
                 overlapping.add(c)
@@ -73,25 +64,22 @@ def part1_v3(input):
                 all_coords.add(c)
     return len(overlapping)
 
-def part1_v1(input):
-    lines = parse(input)
-    pp.pprint(lines)
+def part1(lines):
     h_or_v_lines = [line for line in lines if line.is_v() or line.is_h()]
+    return count_intersections(h_or_v_lines)
 
-    all_intersection_points = set()
-    for i in range(0, len(h_or_v_lines)):
-        for j in range(0, len(h_or_v_lines)):
-            if i == j:
-                continue
-            pa = h_or_v_lines[i].all_h_or_v_points()
-            pb = h_or_v_lines[j].all_h_or_v_points()
-            all_intersection_points |= pa&pb
-    return len(set(all_intersection_points))
 
-part1 = part1_v3
-# sample_line = Line(Point(9,7), Point(7,7))
-# assert(sample_line.all_h_or_v_points() == set([(7,7), (8, 7), (9,7)]))
+def part2(lines):
+    h_or_v_or_diag = [line for line in lines if line.is_v() or line.is_h() or line.is_diag()]
+    return count_intersections(h_or_v_or_diag)
 
-# assert(part1(test_input) == 5)
-# # 5744 to low, 6544 is too high
-print(part1(input))
+sample_line = Line(Point(9,7), Point(7,7))
+assert(sample_line.all_h_or_v_points() == set([(7,7), (8, 7), (9,7)]))
+sample_line_diag = Line(Point(9,7), Point(7,9))
+assert(sample_line_diag.all_h_or_v_points() == set([(9,7), (8, 8), (7,9)]))
+
+assert(part1(parse(test_input)) == 5)
+assert(part2(parse(test_input)) == 12)
+lines = parse(input)
+print(part1(lines))
+print(part2(lines))
