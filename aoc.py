@@ -1,3 +1,4 @@
+import re
 from typing import List
 import argparse
 import datetime
@@ -27,6 +28,10 @@ def as_ints(lines: List[str]) -> List[str]:
     """Return a list where each line in the input file is an element of the list, converted into an integer"""
     line_as_int = lambda l: int(l.rstrip('\n'))
     return list(map(line_as_int, lines))
+
+def all_ints(input: str) -> List[int]:
+    """Return all the ints in the input string, wherever they can be """
+    return list(map(int, re.findall("\d+", input)))
 
 def get_current_year() -> int:
     currentDateTime = datetime.datetime.now()

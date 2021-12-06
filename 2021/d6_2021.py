@@ -2,8 +2,7 @@ import aoc
 from collections import Counter
 from functools import partial
 
-def parse(input):
-    return list(map(int, input.split(",")))
+def parse(input): return aoc.all_ints(input)
 
 def update_population_count(c):
     c2 = Counter()
@@ -26,6 +25,8 @@ if __name__ == "__main__":
     test_ints = parse(test_input)
     part1 = partial(count_population, nb_steps=80)
     part2 = partial(count_population, nb_steps=256)
+    part3 = partial(count_population, nb_steps=10000)
+    part4 = partial(count_population, nb_steps=150_000)
 
     assert(count_population(test_ints, 18) == 26)
     assert(count_population(test_ints, 80) == 5934)
@@ -33,3 +34,5 @@ if __name__ == "__main__":
 
     print(part1(ints))
     print(part2(ints))
+    print(part3(ints))
+    print(part4(ints))

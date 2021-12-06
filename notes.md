@@ -122,3 +122,17 @@ Wrote 3 different versions because I thought my code was incorrect. Turns out I 
 The final version is O(N), the first is O(N^2) and is much slower.
 
 Missed opportunity to dig Bresenham’s Line algorithm, but it wasn’t worth the effort
+
+
+## Day 6
+
+Like everybody I guess:
+ - Initial implementation using a loooot of memory. O(exp(n)), ok-ish but already slow for n=80. Not suitable for second part (more than 1s/generation after n=180)
+ - Much better implementation in O(n) using brain to think about the problem. Short, clean code, 0.37s up to n=150k
+
+There is a generalization using matrix exponentation: https://old.reddit.com/r/adventofcode/comments/r9z49j/2021_day_6_solutions/hnfp9r9/
+It has a log(n) implementation: https://www.geeksforgeeks.org/matrix-exponentiation/ or https://www.hackerearth.com/practice/notes/matrix-exponentiation-1/. This approach might makes it possible to do the "upping the ante" part faster (n = 10k, n=150k), but the current solution is fast enough (0.37s)
+Todo: actually implement modular exponentiation for Upping the ante part3: 10^100
+https://www.reddit.com/r/adventofcode/comments/ra3f5i/2021_day_6_part_3_day_googol/
+Todo: Upping the ante part4: 10^10^100
+https://www.reddit.com/r/adventofcode/comments/ra88up/2021_day_6_part_4_day_googolplex/
