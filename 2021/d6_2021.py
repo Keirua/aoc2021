@@ -1,5 +1,7 @@
 import aoc
 import re, pprint, itertools as it
+from collections import Counter
+from functools import partial
 pp = pprint.PrettyPrinter(indent=4)
 
 input = aoc.input_as_string(aoc.challenge_filename(6, 2021))
@@ -10,24 +12,27 @@ def parse(input):
 ints = parse(input)
 test_ints = parse(test_input)
 
-def step(ints):
-    new_ints = []
-    for i in ints:
-        if i>0:
-            new_ints.append(i-1)
-        else:
-            new_ints.append(6)
-            new_ints.append(8)
-    return new_ints
+def update_population_count(c):
+    c2 = Counter()
+    for i in range(1, 8+1):
+        c2[i-1] = c[i]
+    c2[6] += c[0]
+    c2[8] += c[0]
+    return c2
 
-def part1(ints, n=80):
+def count_population(ints, n=80):
+    c = Counter(ints)
     for i in range(n):
-        ints = step(ints)
-    return len(ints)
+        c = update_population_count(c)
+    return sum(c.values())
 
-pp.pprint(test_ints)
-assert(part1(test_ints, 18) == 26)
-assert(part1(test_ints, 80) == 5934)
+if __name__ == "__main__":
+    part1 = partial(count_population, n=80)
+    part2 = partial(count_population, n=256)
 
-pp.pprint(part1(ints, 80))
-# pp.pprint(ints)
+    assert(count_population(test_ints, 18) == 26)
+    assert(count_population(test_ints, 80) == 5934)
+    assert(part2(test_ints) == 26984457539)
+
+    print(part1(ints))
+    print(part2(ints))
