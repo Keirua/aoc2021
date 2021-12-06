@@ -1,16 +1,9 @@
 import aoc
-import re, pprint, itertools as it
 from collections import Counter
 from functools import partial
-pp = pprint.PrettyPrinter(indent=4)
 
-input = aoc.input_as_string(aoc.challenge_filename(6, 2021))
-test_input = "3,4,3,1,2"
 def parse(input):
-    return list(map(int,re.findall("\d+", input)))
-
-ints = parse(input)
-test_ints = parse(test_input)
+    return list(map(int, input.split(",")))
 
 def update_population_count(c):
     c2 = Counter()
@@ -20,15 +13,19 @@ def update_population_count(c):
     c2[8] += c[0]
     return c2
 
-def count_population(ints, n=80):
+def count_population(ints, nb_steps=80):
     c = Counter(ints)
-    for i in range(n):
+    for i in range(nb_steps):
         c = update_population_count(c)
     return sum(c.values())
 
 if __name__ == "__main__":
-    part1 = partial(count_population, n=80)
-    part2 = partial(count_population, n=256)
+    input = aoc.input_as_string(aoc.challenge_filename(6, 2021))
+    test_input = "3,4,3,1,2"
+    ints = parse(input)
+    test_ints = parse(test_input)
+    part1 = partial(count_population, nb_steps=80)
+    part2 = partial(count_population, nb_steps=256)
 
     assert(count_population(test_ints, 18) == 26)
     assert(count_population(test_ints, 80) == 5934)
