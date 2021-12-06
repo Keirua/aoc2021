@@ -93,10 +93,32 @@ https://en.wikipedia.org/wiki/Partition_%28number_theory%29#Rank_and_Durfee_squa
 
 # 2021
 
+## Cool external implementations
+
  - day 1: implementation in Piet (an esoteric, visual, stack-based language), explained a bit: https://www.reddit.com/r/adventofcode/comments/r6v23p/day_1_part_1_a_solution_in_piet_a_language_where/
  - day 3: fun visualization with pygames: https://www.reddit.com/r/adventofcode/comments/r7x4yk/2021_day_3_part_2pygame_oxy_filter/
+ - day 4: nice visualization with Love: https://www.reddit.com/r/adventofcode/comments/r8wq0c/2021_day_4_bingo_blinkenlights/
 
 ## Day 4
 
 Quite happy with my (non-necessary) grid design that I’ve used in other problems already.
-Grid display (modified from `display` on http://norvig.com/sudoku.html) is quite versatile
+Grid display (modified from `display` on http://norvig.com/sudoku.html) is quite versatile:
+
+```python
+    def __str__(self):
+        """Display these values as a 2-D grid.
+        Inspired by norvig’s sudoku: http://norvig.com/sudoku.html
+        """
+        width = 1 + max(len(self.lines[y]) for y in range(self.h))
+        line = ""
+        for l in self.lines:
+            line += ''.join([str(c).center(width) for c in l]) + "\n"
+        return line
+```
+
+## Day 5:
+
+Wrote 3 different versions because I thought my code was incorrect. Turns out I typed the answer incorrectly.
+The final version is O(N), the first is O(N^2) and is much slower.
+
+Missed opportunity to dig Bresenham’s Line algorithm, but it wasn’t worth the effort
