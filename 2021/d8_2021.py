@@ -16,7 +16,7 @@ gcafb gcf dcaebfg ecagb gf abcdeg gaef cafbge fdbac fegbdc | fgae cfgab fg bagce
 lines = aoc.as_lines(input)
 # lines = aoc.as_lines(example_input)
 
-print(lines)
+# print(lines)
 def n_on(signals, n):
     return list(filter(lambda s: len(s) == n, signals))
 
@@ -37,10 +37,33 @@ for l in lines:
         "".join(four_on): 4,
         "".join(seven_on): 8
     }
-    pp.pprint(mapping)
+
     for o in output_value:
         if o in [two_on, three_on, four_on, seven_on]:
             nb_1478 += 1
-    six_on = four_on = n_on(signals, 6)
+    # so there are 3 numbers with six wires on:
+    # 0,6 and 9
+    # the number 9 is the only number with 6 wires that one of the two wire of 1 off
+    six_wires_on = n_on(signals, 6)
+    possible_number_6 = list(filter(lambda s: two_on[0] not in s or two_on[1] not in s, six_wires_on))
+    assert(len(possible_number_6) == 1)
+    number_6 = "".join(possible_number_6[0])
+    mapping[number_6] = 6
+
+    # the number 9 is the only number with 6 wires that has the same wires as 4
+    possible_number_9 = list(filter(lambda s: four_on[0] in s and four_on[1] in s and four_on[2] in s and four_on[3] in s, six_wires_on))
+    print(possible_number_9)
+    assert (len(possible_number_9) == 1)
+    number_9 = "".join(possible_number_9[0])
+    mapping[number_9] = 9
+
+    # 0 is the remaining 6-letters long wire
+    sixes = list(map(lambda s: "".join(s), six_wires_on))
+    number_0 = list(set(sixes) - set([number_6, number_9]))[0]
+    mapping[number_0] = 0
+
+    pp.pprint(mapping)
+
+
 
 print(nb_1478)
