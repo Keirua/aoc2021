@@ -21,27 +21,26 @@ def n_on(signals, n):
     return list(filter(lambda s: len(s) == n, signals))
 
 nb_1478 = 0
-for l in lines:
-    signal, output_value = l.split(" | ")
-    signals = signal.split(" ")
-    output_value = output_value.split(" ")
-    two_on = list(n_on(signals, 2)[0])   # number 1
-    three_on = list(n_on(signals, 3)[0]) # number 7
-    seven_on = list(n_on(signals, 7)[0]) # number 8
-    four_on = list(n_on(signals, 4)[0])  # number 4
-    two_on.sort()
-    three_on.sort()
-    four_on.sort()
-    seven_on.sort()
-    for o in output_value:
-        o2 = list(o)
-        o2.sort()
-        print(o2)
-        for easy in [two_on, three_on, four_on, seven_on]:
-            if len(easy) > 0 and o2 == easy:
-                nb_1478 += 1
-                break
-    # output_value.count(two_on)
 
-    # print(two_on, three_on, seven_on, four_on)
+for l in lines:
+    signals, output_value = l.split(" | ")
+    signals = list(map(lambda s: sorted(s), signals.split(" ")))
+    output_value = list(map(lambda s: sorted(s), output_value.split(" ")))
+
+    two_on = n_on(signals, 2)[0]   # number 1
+    three_on = n_on(signals, 3)[0] # number 7
+    seven_on = n_on(signals, 7)[0] # number 8
+    four_on = n_on(signals, 4)[0]  # number 4
+    mapping = {
+        "".join(two_on): 1,
+        "".join(three_on): 7,
+        "".join(four_on): 4,
+        "".join(seven_on): 8
+    }
+    pp.pprint(mapping)
+    for o in output_value:
+        if o in [two_on, three_on, four_on, seven_on]:
+            nb_1478 += 1
+    six_on = four_on = n_on(signals, 6)
+
 print(nb_1478)
