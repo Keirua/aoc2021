@@ -1,6 +1,10 @@
 
 # 2021
 
+Some cool other challenges:
+ - CSES: https://cses.fi/problemset/ (worth going through https://www.geeksforgeeks.org/top-algorithms-and-data-structures-for-competitive-programming/, or similar like https://cp-algorithms.com/?)
+ - https://www.reddit.com/r/adventofcode/comments/r99sio/where_to_find_other_programming_challenges/
+
 ## Cool external implementations
 
  - day 1: implementation in Piet (an esoteric, visual, stack-based language), explained a bit: https://www.reddit.com/r/adventofcode/comments/r6v23p/day_1_part_1_a_solution_in_piet_a_language_where/
@@ -30,6 +34,10 @@ Wrote 3 different versions because I thought my code was incorrect. Turns out I 
 The final version is O(N), the first is O(N^2) and is much slower.
 
 Missed opportunity to dig Bresenham’s Line algorithm, but it wasn’t worth the effort
+
+Harder:
+ - https://www.reddit.com/r/adventofcode/comments/r9zwj0/2021_day_5_unofficial_part_4_100000_long_vents/
+ - https://www.reddit.com/r/adventofcode/comments/r9hpfs/2021_day_5_bigger_vents/hnf8obo/?context=3
 
 
 ## Day 6

@@ -14,6 +14,10 @@ def part_1(ints) -> int:
 def part_2(ints) -> int:
     nb_inc = 0
     for i in range(len(ints)-3):
+        # it is worth noting that we can avoid the sum and compare 2 ints:
+        # s < s2
+        # <=> ints[i]+ints[i+1]+ints[i+2] < ints[i+1]+ints[i+2]+ints[i+3]
+        # <=> ints[i] < ints[i+3]
         s = sum(ints[i:i+3])
         s2 = sum(ints[i+1:i+4])
         if s2 > s:
