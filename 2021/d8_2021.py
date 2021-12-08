@@ -1,0 +1,47 @@
+import aoc
+import re, pprint, itertools as it
+pp = pprint.PrettyPrinter(indent=4)
+
+input = aoc.input_as_string(aoc.challenge_filename(8, 2021))
+example_input = """be cfbegad cbdgef fgaecd cgeb fdcge agebfd fecdb fabcd edb | fdgacbe cefdb cefbgd gcbe
+edbfga begcd cbg gc gcadebf fbgde acbgfd abcde gfcbed gfec | fcgedb cgb dgebacf gc
+fgaebd cg bdaec gdafb agbcfd gdcbef bgcad gfac gcb cdgabef | cg cg fdcagb cbg
+fbegcd cbd adcefb dageb afcb bc aefdc ecdab fgdeca fcdbega | efabcd cedba gadfec cb
+aecbfdg fbg gf bafeg dbefa fcge gcbea fcaegb dgceab fcbdga | gecf egdcabf bgf bfgea
+fgeab ca afcebg bdacfeg cfaedg gcfdb baec bfadeg bafgc acf | gebdcfa ecba ca fadegcb
+dbcfg fgd bdegcaf fgec aegbdf ecdfab fbedc dacgb gdcebf gf | cefg dcbef fcge gbcadfe
+bdfegc cbegaf gecbf dfcage bdacg ed bedf ced adcbefg gebcd | ed bcgafe cdgba cbgef
+egadfb cdbfeg cegd fecab cgb gbdefca cg fgcdab egfdb bfceg | gbdfcae bgc cg cgb
+gcafb gcf dcaebfg ecagb gf abcdeg gaef cafbge fdbac fegbdc | fgae cfgab fg bagce"""
+lines = aoc.as_lines(input)
+# lines = aoc.as_lines(example_input)
+
+print(lines)
+def n_on(signals, n):
+    return list(filter(lambda s: len(s) == n, signals))
+
+nb_1478 = 0
+for l in lines:
+    signal, output_value = l.split(" | ")
+    signals = signal.split(" ")
+    output_value = output_value.split(" ")
+    two_on = list(n_on(signals, 2)[0])   # number 1
+    three_on = list(n_on(signals, 3)[0]) # number 7
+    seven_on = list(n_on(signals, 7)[0]) # number 8
+    four_on = list(n_on(signals, 4)[0])  # number 4
+    two_on.sort()
+    three_on.sort()
+    four_on.sort()
+    seven_on.sort()
+    for o in output_value:
+        o2 = list(o)
+        o2.sort()
+        print(o2)
+        for easy in [two_on, three_on, four_on, seven_on]:
+            if len(easy) > 0 and o2 == easy:
+                nb_1478 += 1
+                break
+    # output_value.count(two_on)
+
+    # print(two_on, three_on, seven_on, four_on)
+print(nb_1478)
