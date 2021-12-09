@@ -64,3 +64,33 @@ proof: https://www.reddit.com/r/adventofcode/comments/rawxad/2021_day_7_part_2_i
 not very mathematical talk: https://www.reddit.com/r/adventofcode/comments/rar7ty/2021_day_7_solutions/hnkd58g/?utm_source=share&utm_medium=web2x&context=3
 More interestingly: median can be computed in O(n) time:
 https://rcoh.me/posts/linear-time-median-finding/
+
+## Day 8 - 7-segment display
+
+My implementation sucked.
+ - it might be a good exercise to revisit it with Z3 (https://www.reddit.com/r/adventofcode/comments/rbwnh5/2021_day_8_can_it_be_solved_as_a_constraint/)
+ - a simple(r, slightly) solution explained visually: https://www.reddit.com/r/adventofcode/comments/rbvpui/2021_day_8_part_2_my_logic_on_paper_i_used_python/
+ - a clever solution involves bitmasks: https://www.reddit.com/r/adventofcode/comments/rc5s3z/comment/hntdb91/?utm_source=share&utm_medium=web2x&context=3
+
+## Day 9
+
+It was cool to implement floodfilling.
+
+```python
+from collections import deque
+def find_basin(grid: HeightMapGrid, start):
+    """Find the basin that contains the starting position using flood filling"""
+    basin = [start]
+    visited = [start]
+    queue = deque(grid.neighbours4(start[0], start[1]))
+    while len(queue) > 0:
+        t = queue.popleft()
+        if grid.get(t[0], t[1]) != 9 and t not in visited:
+            basin.append(t)
+            visited.append(t)
+
+            for n in grid.neighbours4(t[0], t[1]):
+                queue.append(n)
+
+    return basin
+```
