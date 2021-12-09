@@ -33,6 +33,19 @@ def step_iterative(mat, n):
     for i in range(n):
         tmp = np.dot(mat, tmp)
     return tmp
-mat = step_iterative(mat, 18)
+
+def step_fast(matrix, n):
+    # inspired from https://www.hackerearth.com/practice/notes/matrix-exponentiation-1/
+    res = np.identity(9, dtype="int")
+    while n > 0:
+        if n % 2 == 1:
+            res = np.dot(res, matrix)
+        matrix = np.dot(matrix, matrix)
+        n = n//2
+    return res
+
+mat_after = step_fast(mat, 18)
+print(mat)
+print(mat_after)
 print(mat.dot(bc).sum())
 # population_count = sum(bc.dot([i for i in range(len(bc))])
