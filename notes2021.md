@@ -74,7 +74,7 @@ My implementation sucked.
 
 ## Day 9
 
-It was cool to implement floodfilling.
+It was cool to implement [floodfilling](https://en.wikipedia.org/wiki/Flood_fill#Moving_the_recursion_into_a_data_structure), and to be able to implement it without looking at pseudocode.
 
 ```python
 from collections import deque
