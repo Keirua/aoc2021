@@ -17,15 +17,15 @@ Quite happy with my (non-necessary) grid design that I’ve used in other proble
 Grid display (modified from `display` on http://norvig.com/sudoku.html) is quite versatile:
 
 ```python
-    def __str__(self):
-        """Display these values as a 2-D grid.
-        Inspired by norvig’s sudoku: http://norvig.com/sudoku.html
-        """
-        width = 1 + max(len(self.lines[y]) for y in range(self.h))
-        line = ""
-        for l in self.lines:
-            line += ''.join([str(c).center(width) for c in l]) + "\n"
-        return line
+def __str__(self):
+    """Display these values as a 2-D grid.
+    Inspired by norvig’s sudoku: http://norvig.com/sudoku.html
+    """
+    width = 1 + max([len(str(self.lines[y][x])) for (x, y) in self.all_coords()])
+    line = ""
+    for l in self.lines:
+        line += ''.join([str(c).center(width) for c in l]) + "\n"
+    return line
 ```
 
 ## Day 5:
