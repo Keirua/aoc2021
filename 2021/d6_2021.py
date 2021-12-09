@@ -27,6 +27,7 @@ if __name__ == "__main__":
     part2 = partial(count_population, nb_steps=256)
     part3 = partial(count_population, nb_steps=10000)
     part4 = partial(count_population, nb_steps=150_000)
+    part5 = partial(count_population, nb_steps=10**6) # about 5 seconds
 
     assert(count_population(test_ints, 18) == 26)
     assert(count_population(test_ints, 80) == 5934)
@@ -36,3 +37,5 @@ if __name__ == "__main__":
     print(part2(ints))
     print(part3(ints))
     print(part4(ints))
+    # print(part5(ints))
+    # print(part5(ints))
