@@ -1,9 +1,29 @@
 
 # 2021
 
-Some cool other challenges:
+## Todo (would be nice to dig a bit more)
+
+Day 6 Upping the ante:
+ - part3 googol: write an article about the process (naive implementation, linear time, then matrix exponentiation)
+ - part4: 10^10^100: https://www.reddit.com/r/adventofcode/comments/ra88up/2021_day_6_part_4_day_googolplex/
+
+day 5 upping the ante (maybe):
+ - https://www.reddit.com/r/adventofcode/comments/r9zwj0/2021_day_5_unofficial_part_4_100000_long_vents/
+ - https://www.reddit.com/r/adventofcode/comments/r9hpfs/2021_day_5_bigger_vents/hnf8obo/?context=3
+
+day 7: implement median in linear time:
+ - https://rcoh.me/posts/linear-time-median-finding/
+
+day 8:
+ - bruteforce the segments, in order to see if I can find the wire layout, à la J. Paulson: https://www.youtube.com/watch?v=DhQPrF-LBoE
+ - write a cleaner version
+ - see if I can implement it with Z3
+
+## Some cool other challenges I should complete:
+ - other non-finished years
  - CSES: https://cses.fi/problemset/ (worth going through https://www.geeksforgeeks.org/top-algorithms-and-data-structures-for-competitive-programming/, or similar like https://cp-algorithms.com/?)
  - https://www.reddit.com/r/adventofcode/comments/r99sio/where_to_find_other_programming_challenges/
+ - cryptopals
 
 ## Cool external implementations
 
@@ -98,3 +118,6 @@ def find_basin(grid, start):
 
     return basin
 ```
+
+# day 10: token parsing (validation of the structure of ()<>[]{} and completion)
+# day 11: cellular automaton. Cool to reuse my grid class

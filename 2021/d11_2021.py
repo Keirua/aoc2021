@@ -48,19 +48,8 @@ class Grid:
     def __getitem__(self, p):
         return self.lines[p[1]][p[0]]
 
-    def set(self, x, y, v):
-        self.lines[y][x] = v
-
-    def get(self, x, y):
-        return self.lines[y][x]
-
     def is_in_grid(self, p) -> bool:
         return 0 <= p[0] < self.w and 0 <= p[1] < self.h
-
-    def neighbours4(self, p):
-        offsets = [(-1, 0), (1, 0), (0, -1), (0, 1)]
-        x, y = p
-        return [(x + dx, y + dy) for (dx, dy) in offsets if self.is_in_grid((x + dx, y + dy))]
 
     def neighbours8(self, p):
         offsets = [(-1, 0), (1, 0), (0, -1), (0, 1), (-1, -1), (-1, 1), (1, -1), (1, 1)]
@@ -74,23 +63,6 @@ class Grid:
 
     def get_cell_color(self, v):
         return COLOR_NORMAL
-
-    def floodfill(self, start, cond_is_matched):
-        """Find the neighbouring points using flood filling"""
-        from collections import deque
-        matching_points = [start]
-        visited = [start]
-        queue = deque(self.neighbours4(start))
-        while len(queue) > 0:
-            t = queue.popleft()
-            if t not in visited and cond_is_matched(self[t]):
-                matching_points.append(t)
-                visited.append(t)
-
-                for n in self.neighbours4(t):
-                    queue.append(n)
-
-        return matching_points
 
 
 class OctopusGrid(Grid):

@@ -33,7 +33,14 @@ class Grid:
         return 0 <= p[0] < self.w and 0 <= p[1] < self.h
 
     def neighbours4(self, p):
+        """Return the neighbours, horizontal and vertical"""
         offsets = [(-1, 0), (1, 0), (0, -1), (0, 1)]
+        x, y = p
+        return [(x + dx, y + dy) for (dx, dy) in offsets if self.is_in_grid((x + dx, y + dy))]
+
+    def neighbours8(self, p):
+        """Return the eight neighbours, horijont, vertical and diagonals"""
+        offsets = [(-1, 0), (1, 0), (0, -1), (0, 1), (-1, -1), (-1, 1), (1, -1), (1, 1)]
         x, y = p
         return [(x + dx, y + dy) for (dx, dy) in offsets if self.is_in_grid((x + dx, y + dy))]
 
@@ -76,6 +83,10 @@ class Grid:
 if __name__ == "__main__":
     class SampleGrid(Grid):
         """A grid to demo color implementation"""
+
+        def __init__(self, w=0, h=0, lines=[]):
+            super().__init__(w, h, lines)
+            pass
 
         def get_cell_color(self, v):
             return COLOR_GREEN if v is not None else COLOR_RED
