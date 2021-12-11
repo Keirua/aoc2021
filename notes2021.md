@@ -72,6 +72,9 @@ My implementation sucked.
  - it might be a good exercise to revisit it with Z3 (https://www.reddit.com/r/adventofcode/comments/rbwnh5/2021_day_8_can_it_be_solved_as_a_constraint/)
  - a simple(r, slightly) solution explained visually: https://www.reddit.com/r/adventofcode/comments/rbvpui/2021_day_8_part_2_my_logic_on_paper_i_used_python/
  - a clever solution involves bitmasks: https://www.reddit.com/r/adventofcode/comments/rc5s3z/comment/hntdb91/?utm_source=share&utm_medium=web2x&context=3
+ - 2 nice approaches from Jonathan Paulson: https://www.youtube.com/watch?v=DhQPrF-LBoE
+    - bruteforcing the segment values. Slow (40s), but fast to code. Todo: code this approach?
+    - identifying the segment values with logic. Fast (0.3s) but slow to code ;). Much cleaner than mine
 
 ## Day 9
 
@@ -79,7 +82,7 @@ It was cool to implement [floodfilling](https://en.wikipedia.org/wiki/Flood_fill
 
 ```python
 from collections import deque
-def find_basin(grid: HeightMapGrid, start):
+def find_basin(grid, start):
     """Find the basin that contains the starting position using flood filling"""
     basin = [start]
     visited = [start]
