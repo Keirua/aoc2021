@@ -4,15 +4,18 @@
 ## Todo (would be nice to dig a bit more)
 
 Day 6 Upping the ante:
- - part3 googol: write an article about the process (naive implementation, linear time, then matrix exponentiation)
+ - part3 googol:
+   - [x] implement the matrix exponentiation solution
+   - write an article about the process (naive implementation, linear time, then matrix exponentiation)
  - part4: 10^10^100: https://www.reddit.com/r/adventofcode/comments/ra88up/2021_day_6_part_4_day_googolplex/
 
 day 5 upping the ante (maybe):
  - https://www.reddit.com/r/adventofcode/comments/r9zwj0/2021_day_5_unofficial_part_4_100000_long_vents/
  - https://www.reddit.com/r/adventofcode/comments/r9hpfs/2021_day_5_bigger_vents/hnf8obo/?context=3
 
-day 7: implement median in linear time:
- - https://rcoh.me/posts/linear-time-median-finding/
+day 7:
+ - [x] implement the fast median and mean solutions
+ - implement median in linear time: https://rcoh.me/posts/linear-time-median-finding/
 
 day 8:
  - bruteforce the segments, in order to see if I can find the wire layout, à la J. Paulson: https://www.youtube.com/watch?v=DhQPrF-LBoE
@@ -80,9 +83,9 @@ https://www.reddit.com/r/adventofcode/comments/ra88up/2021_day_6_part_4_day_goog
 ## Day 7
 
 Went for a bruteforce approach, short and quick anyway.
-Apparently a solution involving the median for part1 works (and mean for part2):
-proof: https://www.reddit.com/r/adventofcode/comments/rawxad/2021_day_7_part_2_i_wrote_a_paper_on_todays/
-not very mathematical talk: https://www.reddit.com/r/adventofcode/comments/rar7ty/2021_day_7_solutions/hnkd58g/?utm_source=share&utm_medium=web2x&context=3
+A solution involving the median for part1 works (and mean for part2):
+ - proof: https://www.reddit.com/r/adventofcode/comments/rawxad/2021_day_7_part_2_i_wrote_a_paper_on_todays/
+ - not very mathematical talk: https://www.reddit.com/r/adventofcode/comments/rar7ty/2021_day_7_solutions/hnkd58g/?utm_source=share&utm_medium=web2x&context=3
 More interestingly: median can be computed in O(n) time:
 https://rcoh.me/posts/linear-time-median-finding/
 
