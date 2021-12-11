@@ -140,26 +140,30 @@ class OctopusGrid(Grid):
 
 def part1(grid, n=3):
     total = 0
-    for i in range(1, n):
+    for i in range(1, n+1):
         grid, nb = grid.step()
         total += nb
         print(f"Step {i}")
         print(grid)
-        # print(nb)
     return total
+
+def part2(grid):
+    nb_steps = 0
+    while True:
+        grid, nb = grid.step()
+        nb_steps +=1
+        if nb == grid.w * grid.h:
+            break
+        # print(f"Step {nb_steps}")
+        # print(grid)
+    return nb_steps
 
 grid = OctopusGrid.from_lines(lines)
 test_grid = OctopusGrid.from_lines(test_lines)
 test_grid2 = OctopusGrid.from_lines(aoc.as_lines(test_input2))
 print(test_grid)
-print(part1(test_grid, 10+1))
-assert(part1(test_grid, 100+1) == 1656)
-print(part1(grid, 100+1))
-#
-# print(test_grid2)
-# print(part1(test_grid2, 5))
-
-# print(test_grid)
-# print(grid)
-# pp.pprint(lines)
-# pp.pprint(test_lines)
+print(part1(test_grid, 10))
+assert(part1(test_grid, 100) == 1656)
+print(part1(grid, 100))
+assert(part2(test_grid) == 195)
+print(part2(grid))
