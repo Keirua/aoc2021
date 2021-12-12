@@ -16,6 +16,41 @@ def part2(positions):
     k = round(mean(positions))
     return min([sum(cost2(abs(k2-p)) for p in positions) for k2 in range(k-1, k+2)])
 
+def nlogn_median(values):
+    """"""
+    values = sorted(values)
+    l = len(values)
+    # If the data set has an odd number of observations, the middle one is the median.
+    if l %2 == 1:
+        return values[l // 2]
+    # If the data set has an even number of observations, there is no distinct middle value and
+    # the median is usually defined to be the arithmetic mean of the two middle values
+    return 0.5*(values[l // 2 - 1] + values[l // 2])
+
+assert(nlogn_median([1, 3, 3, 6, 7, 8, 9]) == 6)
+assert(nlogn_median([1, 2, 3, 4, 5, 6, 8, 9]) == (4+5)/2)
+
+import random
+def linear_median(values):
+    # pick a random pivot
+    pivot = random.choice(values)
+    k = len(values) // 2
+    # now we partition our list into two sub lists:
+    #  - in lessers_or_equal_elts: all the values of the initial list that are <= the pivot
+    #  - in greater_elts: all the values of the initial list that are > the pivot
+    lessers_or_equal_elts = []
+    greater_elts = []
+    for v in values:
+        if v <= pivot:
+            lessers_or_equal_elts.append(v)
+        else:
+            greater_elts.append(v)
+    # now, one of these groups contain the pivot
+
+def quickselect():
+    pass
+
+
 if __name__ == "__main__":
     input = aoc.input_as_string(aoc.challenge_filename(7, 2021))
     test_input = "16,1,2,0,4,2,7,1,2,14"
