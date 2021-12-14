@@ -81,9 +81,9 @@ commit Commit a file from staging area to the local repository.
     def template(self):
         year, day = get_year_day()
         tpl = get_template(day, year)
-        # print(tpl)
-        with open(code_filename(day, year), 'w') as f:
-            f.write(tpl)
+        if not os.path.exists(code_filename(day, year)):
+            with open(code_filename(day, year), 'w') as f:
+                f.write(tpl)
 
 def code_filename(day, year):
     return f"{year}/d{day}_{year}.py"
