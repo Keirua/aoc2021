@@ -47,26 +47,8 @@ class Grid:
     def __getitem__(self, p):
         return self.lines[p[1]][p[0]]
 
-    def set(self, x, y, v):
-        self.lines[y][x] = v
-
-    def get(self, x, y):
-        return self.lines[y][x]
-
     def is_in_grid(self, p) -> bool:
         return 0 <= p[0] < self.w and 0 <= p[1] < self.h
-
-    def neighbours4(self, p):
-        """Return the neighbours, horizontal and vertical"""
-        offsets = [(-1, 0), (1, 0), (0, -1), (0, 1)]
-        x, y = p
-        return [(x + dx, y + dy) for (dx, dy) in offsets if self.is_in_grid((x + dx, y + dy))]
-
-    def neighbours8(self, p):
-        """Return the eight neighbours, horijont, vertical and diagonals"""
-        offsets = [(-1, 0), (1, 0), (0, -1), (0, 1), (-1, -1), (-1, 1), (1, -1), (1, 1)]
-        x, y = p
-        return [(x + dx, y + dy) for (dx, dy) in offsets if self.is_in_grid((x + dx, y + dy))]
 
     def all_coords(self):
         for x in range(self.w):
@@ -77,7 +59,7 @@ class Grid:
         """Display these values as a 2-D grid.
         Inspired by norvig’s sudoku: http://norvig.com/sudoku.html
         """
-        width = 1 + max([len(str(self.lines[y][x])) for (x, y) in self.all_coords()])
+        width = 1
         text = ""
         for line in self.lines:
             text += ''.join([str(c).center(width) for c in line]) + "\n"
@@ -89,17 +71,17 @@ def parse(input):
     folds = [(axis, int(v)) for axis,v in re.findall(r"(x|y)=(\d+)", input)]
     max_x = max(x for (x, y) in coords)
     max_y = max(y for (x, y) in coords)
-    print(max_x, max_y)
+    # print(max_x, max_y)
     g = Grid.from_value(max_x+1, max_y+1, ".")
     # print(coords)
     for c in coords:
-        g[c] = "#"
+        g[c] = "█"
 
     return (g, folds)
 
 def fold(grid:Grid, fold):
     axis, value = fold
-    print(axis, value, fold)
+    # print(axis, value, fold)
     if axis == 'y':
         g2 = Grid.from_value(grid.w, value, '.')
         for c in grid.all_coords():
@@ -134,7 +116,7 @@ def part1(grid:Grid, folds):
     grid = fold(grid, folds[0])
     nb_lit = 0
     for c in grid.all_coords():
-        if grid[c] == "#":
+        if grid[c] == "█":
             nb_lit += 1
     return nb_lit
 
