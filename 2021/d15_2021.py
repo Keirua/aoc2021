@@ -98,12 +98,41 @@ class Grid:
             text += ''.join([self.get_cell_color(c) + str(c).center(width) for c in line]) + "\n"
         return text + COLOR_NORMAL
 
-def shortest_path(grid):
-    start = (0,0)
-    end = (grid.w-1, grid.h-1)
-    path = []
+def dijkstra(grid, start=(0, 0)):
+    dist = { v: 1000000000000000 for v in grid.all_coords()}
+    prev = { v: None for v in grid.all_coords() }
+    dist[start] = 0
+    Q = [v for v in grid.all_coords()]
+    while len(Q) > 0:
+        min_u = None
+        min_dist = 1000000000000000
+        # We search for the best node
+        for u in Q:
+            if min_u is None or dist[u] < dist[min_u]:
+                min_u = u
+                min_dist = dist[u]
+        Q.remove(min_u)
+        for v in grid.neighbours4(min_u):
+            alt = dist[min_u] + int(grid[v])
+            if alt < dist[v]:
+                dist[v] = alt
+                prev[v] = min_u
+
+    return dist, prev
+
+def shortest_path(target, dist, prev):
+    pass
+
+def part1(grid):
+    dist, prev = dijkstra(grid)
+    return dist[(grid.w-1, grid.h-1)]
 
 test_grid = Grid.from_lines(test_lines)
+grid = Grid.from_lines(lines)
 
 print(test_grid)
-shortest_path(test_grid)
+dist, prev = dijkstra(test_grid)
+assert(part1(test_grid) == 40)
+print(part1(grid))
+# pp.pprint(prev)
+# pp.pprint(dist)
