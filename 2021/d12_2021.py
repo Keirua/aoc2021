@@ -21,28 +21,72 @@ kj-sa
 kj-HN
 kj-dc"""
 
+test_input3 = """fs-end
+he-DX
+fs-he
+start-DX
+pj-DX
+end-zg
+zg-sl
+zg-pj
+pj-he
+RW-he
+fs-DX
+pj-RW
+zg-RW
+start-pj
+he-WI
+zg-he
+pj-fs
+start-RW"""
+
+from collections import defaultdict
+
 def parse(input):
-    edges = {}
+    edges = defaultdict(list)
     lines = input.split("\n")
     for line in lines:
         a, b = line.split("-")
-        if a not in edges:
-            edges[a] = []
-        if b not in edges:
-            edges[b] = []
         edges[a].append(b)
         edges[b].append(a)
     return edges
 
-# edges = {
-#     "a": ["b", "c"], # from a, it is possible to go to b or c
-#     "b": ["d", "e"],
-#     "c": ["f", "g"],
-#     "d": [],
-#     "e": ["h"],
-#     "f": [],
-#     "g": []
-# }
 
-test_graph = parse(test_input)
-pp.pprint(test_graph)
+class Graph:
+    def __init__(self, input):
+        self.edges = parse(input)
+        self.all_paths = []
+        self.current_path = []
+        self.visited = {k: False for k in self.edges.keys()}
+
+    def dfs(self, u="start", v="end"):
+        if u.islower() and self.visited[u]:
+            return
+        self.visited[u] = True
+        self.current_path.append(u)
+        if u == v:
+            self.all_paths.append(self.current_path.copy())
+            self.visited[u] = False
+            self.current_path.pop()
+            return
+        for w in self.edges[u]:
+            # print(self.edges[u])
+            if (w.islower() and self.visited[w] == False) or w.isupper():
+                self.dfs(w, v)
+        self.current_path.pop()
+        self.visited[u] = False
+
+def part1(graph:Graph) -> int:
+    graph.dfs()
+    return len(graph.all_paths)
+
+graph = Graph(input)
+test_graph = Graph(test_input)
+test_graph2 = Graph(test_input2)
+test_graph3 = Graph(test_input3)
+# test_graph.dfs("start", "end")
+# pp.pprint(test_graph.all_paths)
+assert(part1(test_graph) == 10)
+assert(part1(test_graph2) == 19)
+assert(part1(test_graph3) == 226)
+print(part1(graph))
