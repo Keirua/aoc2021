@@ -98,6 +98,12 @@ class Grid:
             text += ''.join([self.get_cell_color(c) + str(c).center(width) for c in line]) + "\n"
         return text + COLOR_NORMAL
 
+def shortest_path(grid):
+    start = (0,0)
+    end = (grid.w-1, grid.h-1)
+    path = []
+
 test_grid = Grid.from_lines(test_lines)
 
 print(test_grid)
+shortest_path(test_grid)
