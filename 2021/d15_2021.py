@@ -98,7 +98,7 @@ class Grid:
             text += ''.join([self.get_cell_color(c) + str(c).center(width) for c in line]) + "\n"
         return text + COLOR_NORMAL
 
-def dijkstra(grid, start=(0, 0)):
+def dijkstra(grid, start=(0, 0), end=None):
     dist = { v: 1000000000000000 for v in grid.all_coords()}
     prev = { v: None for v in grid.all_coords() }
     dist[start] = 0
@@ -112,6 +112,8 @@ def dijkstra(grid, start=(0, 0)):
                 min_u = u
                 min_dist = dist[u]
         Q.remove(min_u)
+        if end is not None and end == min_u:
+            break
         for v in grid.neighbours4(min_u):
             alt = dist[min_u] + int(grid[v])
             if alt < dist[v]:
@@ -120,12 +122,55 @@ def dijkstra(grid, start=(0, 0)):
 
     return dist, prev
 
-def shortest_path(target, dist, prev):
-    pass
+import heapq
+def dijkstra_fast(grid, start=(0, 0), end=None):
+    """faster dijkstra implementation using a priority queue"""
+    dist = { v: 1000000000000000 for v in grid.all_coords()}
+    dist[start] = 0
+    prev = { v: None for v in grid.all_coords() }
+    Q = [(0, start)]
+    while len(Q) > 0:
+        min_dist, min_u = heapq.heappop(Q)
+        # we may provide an end node, if so we can break early
+        if end is not None and min_u == end:
+            break
+        if min_dist > dist[min_u]:
+            continue
+
+        for v in grid.neighbours4(min_u):
+            alt = min_dist + int(grid[v])
+            if alt < dist[v]:
+                dist[v] = alt
+                prev[v] = min_u
+                heapq.heappush(Q, (alt, v))
+
+    return dist, prev
 
 def part1(grid):
-    dist, prev = dijkstra(grid)
-    return dist[(grid.w-1, grid.h-1)]
+    target = (grid.w-1, grid.h-1)
+    dist, prev = dijkstra_fast(grid, (0, 0), target)
+    # dist, prev = dijkstra(grid, (0, 0), target)
+    return dist[target]
+
+def inc(v, i):
+    if v + i>= 10:
+        return v+i-9
+    return v+i
+
+def part2(grid:Grid):
+    grid2 = Grid.from_value(5*grid.w, 5*grid.h, 0)
+    for x,y in grid.all_coords():
+        grid2[(x, y)] = grid[(x, y)]
+        for i in range(0, 5):
+            grid2[(x+i*grid.w, y)] = inc(int(grid2[(x, y)]), i)
+
+    for j in range(grid.h, grid2.h):
+        for i in range(grid2.w):
+            grid2[(i,j)] = inc(int(grid2[(i, j-grid.h)]), 1)
+    # print(grid2)
+    target = (grid2.w - 1, grid2.h - 1)
+    dist, prev = dijkstra_fast(grid2, (0, 0), target)
+    return dist[target]
 
 test_grid = Grid.from_lines(test_lines)
 grid = Grid.from_lines(lines)
@@ -134,5 +179,5 @@ print(test_grid)
 dist, prev = dijkstra(test_grid)
 assert(part1(test_grid) == 40)
 print(part1(grid))
-# pp.pprint(prev)
-# pp.pprint(dist)
+assert(part2(test_grid) == 315)
+print(part2(grid))
