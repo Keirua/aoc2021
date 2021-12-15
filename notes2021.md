@@ -22,6 +22,14 @@ day 8:
  - write a cleaner version
  - see if I can implement it with Z3
 
+Day 15:
+ - lookup how a priority queue is implemented
+ - read about other cool graph algorithms:
+   - ford-bellman (slower dijkstra that works on with negative weights: https://en.wikipedia.org/wiki/Bellman%E2%80%93Ford_algorithm)
+   - graph coloring: https://en.wikipedia.org/wiki/Graph_coloring#Algorithms
+   - minimum spanning tree (Prim, Kruskal)
+
+
 ## Some cool other challenges I should complete:
  - other non-finished years
  - CSES: https://cses.fi/problemset/ (worth going through https://www.geeksforgeeks.org/top-algorithms-and-data-structures-for-competitive-programming/, or similar like https://cp-algorithms.com/?)
@@ -124,3 +132,31 @@ def find_basin(grid, start):
 
 # day 10: token parsing (validation of the structure of ()<>[]{} and completion)
 # day 11: cellular automaton. Cool to reuse my grid class
+
+# day 15: dijkstra \o/
+my grid class was useful again
+```python
+import heapq
+def dijkstra_fast(grid:Grid, start=(0, 0), end=None):
+    """faster dijkstra implementation using a priority queue"""
+    dist = { v: 1000000000000000 for v in grid.all_coords()}
+    dist[start] = 0
+    prev = { v: None for v in grid.all_coords() }
+    Q = [(0, start)]
+    while len(Q) > 0:
+        min_dist, min_u = heapq.heappop(Q)
+        # we may provide an end node, if so we can break early
+        if end is not None and min_u == end:
+            break
+        if min_dist > dist[min_u]:
+            continue
+
+        for v in grid.neighbours4(min_u):
+            alt = min_dist + int(grid[v])
+            if alt < dist[v]:
+                dist[v] = alt
+                prev[v] = min_u
+                heapq.heappush(Q, (alt, v))
+
+    return dist, prev
+```
