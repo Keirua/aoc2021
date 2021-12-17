@@ -52,14 +52,15 @@ class Packet:
 
 sum_version = 0
 
-def extract(bits):
+def extract(bits, depth=0):
     global sum_version
+    tabs = "\t"*depth
     v = to_int(bits[0:3])
     t = to_int(bits[3:6])
-    print(f"v: {v}")
-    print(f"t: {t}")
+    print(f"{tabs}v: {v}")
+    print(f"{tabs}t: {t}")
     if t == 4:
-        print("literal value packet")
+        print(f"{tabs}literal value packet")
         data = ""
         i = 0
         # parse type4: literal data
@@ -75,20 +76,20 @@ def extract(bits):
         sum_version += v
         return Packet(v, t, to_int(data), None, []), 6+5*i+5
     else:
-        print("operator packet")
+        print(f"{tabs}operator packet")
         # everything that is not 4 is an operator packet
         # An operator packet contains one or more packets
         length_type_id = int(bits[6])
-        print(f"length_type_id: {length_type_id}")
+        print(f"{tabs}length_type_id: {length_type_id}")
         if length_type_id == 0:
             # If the length type ID is 0, then the next 15 bits are a number
             # that represents the total length in bits of the sub-packets contained by this packet.
             length = to_int(bits[7:7+15])
-            print(f"length: {length}")
+            print(f"{tabs}length: {length}")
             total_offset = 0
             packets = []
             while total_offset < length:
-                new_packet, offset = extract(bits[22 + total_offset:])
+                new_packet, offset = extract(bits[22 + total_offset:], depth+1)
                 total_offset += offset
                 packets.append(new_packet)
             sum_version += v
@@ -98,11 +99,11 @@ def extract(bits):
             # If the length type ID is 1, then the next 11 bits are a number
             # that represents the number of sub-packets immediately contained by this packet.
             number_of_sub_packets = to_int(bits[7:7 + 11])
-            print(f"number_of_sub_packets: {number_of_sub_packets}")
+            print(f"{tabs}number_of_sub_packets: {number_of_sub_packets}")
             packets = []
             total_offset = 0
             for i in range(number_of_sub_packets):
-                new_packet, offset = extract(bits[18+total_offset:])
+                new_packet, offset = extract(bits[18+total_offset:], depth+1)
                 # print(new_packet, offset)
                 total_offset += offset
                 packets.append(new_packet)

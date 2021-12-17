@@ -29,6 +29,18 @@ Day 15:
    - graph coloring: https://en.wikipedia.org/wiki/Graph_coloring#Algorithms
    - minimum spanning tree (Prim, Kruskal)
 
+Day 16:
+
+Implement an utility BitArray class, with an API like bitstring:
+```python
+from bitstring import BitArray
+bits = BitArray(hex='C200B40A82')
+bits # BitArray('0xc200b40a82')
+bits.bin #'1100001000000000101101000000101010000010'
+bits[0:3] # BitArray('0b110')
+bits[0:3].uint # 6
+```
+
 
 ## Some cool other challenges I should complete:
  - other non-finished years
