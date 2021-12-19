@@ -145,6 +145,10 @@ def find_basin(grid, start):
 # day 10: token parsing (validation of the structure of ()<>[]{} and completion)
 # day 11: cellular automaton. Cool to reuse my grid class
 
+# Day 12:
+ - nice writeup: https://github.com/mebeim/aoc/blob/master/2021/README.md#day-12---passage-pathing
+
+
 # day 15: dijkstra \o/
 my grid class was useful again
 ```python
@@ -172,3 +176,10 @@ def dijkstra_fast(grid:Grid, start=(0, 0), end=None):
 
     return dist, prev
 ```
+
+# day 17
+A simple mechanic speed/acceleration problem
+Of course it has an analytical solution:
+ - https://www.reddit.com/r/adventofcode/comments/ri9kdq/2021_day_17_solutions/hoxa0vi/?utm_source=reddit&utm_medium=web2x&context=3
+ - https://github.com/mebeim/aoc/blob/master/2021/README.md#day-17---trick-shot
+but writing code was faster that early

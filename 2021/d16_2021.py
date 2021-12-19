@@ -55,26 +55,25 @@ sum_version = 0
 def extract(bits, depth=0):
     global sum_version
     tabs = "\t"*depth
-    v = to_int(bits[0:3])
-    t = to_int(bits[3:6])
-    print(f"{tabs}v: {v}")
-    print(f"{tabs}t: {t}")
-    if t == 4:
+    version = to_int(bits[0:3])
+    type_id = to_int(bits[3:6])
+    print(f"{tabs}v: {version}")
+    print(f"{tabs}t: {type_id}")
+    if type_id == 4:
         print(f"{tabs}literal value packet")
         data = ""
         i = 0
         # parse type4: literal data
         # read by chunk of 5 bits, stop when the first bit of the last chunk is 0
-        while True:
+        for i in range(6, len(bits), 5):
             # the actual information is stored in the remaining 4 bits
-            data += bits[6+5*i+1:6+5*i+5]
+            data += bits[i+1:i+5]
             # the first bit indicates when to stop
-            if bits[6+5*i] == '0':
+            if bits[i] == '0':
                 break
-            i += 1
 
-        sum_version += v
-        return Packet(v, t, to_int(data), None, []), 6+5*i+5
+        sum_version += version
+        return Packet(version, type_id, to_int(data), None, []), i+5
     else:
         print(f"{tabs}operator packet")
         # everything that is not 4 is an operator packet
@@ -86,14 +85,17 @@ def extract(bits, depth=0):
             # that represents the total length in bits of the sub-packets contained by this packet.
             length = to_int(bits[7:7+15])
             print(f"{tabs}length: {length}")
-            total_offset = 0
+            offset = 22
+            end = -1
             packets = []
-            while total_offset < length:
-                new_packet, offset = extract(bits[22 + total_offset:], depth+1)
-                total_offset += offset
+            while length > 0:
+                new_packet, packet_offset = extract(bits[offset:], depth+1)
                 packets.append(new_packet)
-            sum_version += v
-            return Packet(v, t, None, total_offset, packets), length
+                offset = packet_offset
+                length -= packet_offset - end
+
+            sum_version += version
+            return Packet(version, type_id, None, offset, packets), length
         else:
             assert(length_type_id == 1), length_type_id
             # If the length type ID is 1, then the next 11 bits are a number
@@ -101,14 +103,14 @@ def extract(bits, depth=0):
             number_of_sub_packets = to_int(bits[7:7 + 11])
             print(f"{tabs}number_of_sub_packets: {number_of_sub_packets}")
             packets = []
-            total_offset = 0
+            offset = 0
             for i in range(number_of_sub_packets):
-                new_packet, offset = extract(bits[18+total_offset:], depth+1)
+                new_packet, offset = extract(bits[18+offset:], depth+1)
                 # print(new_packet, offset)
-                total_offset += offset
+                offset += offset
                 packets.append(new_packet)
-            sum_version += v
-            return Packet(v,t, None, total_offset, packets), total_offset
+            sum_version += version
+            return Packet(version,type_id, None, offset, packets), offset
 
 def part1(hex_packet):
     global sum_version
