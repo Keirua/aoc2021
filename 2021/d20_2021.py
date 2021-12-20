@@ -14,108 +14,85 @@ test_input = """..#.#..#####.#.#.#.###.##.....###.##.#..###.####..#####..#....#.
 ..###"""
 
 
-class Grid:
-    def __init__(self, w=0, h=0, lines=[]):
-        self.w = w
-        self.h = h
-        self.lines = lines
-
-    @classmethod
-    def from_value(cls, w, h, value=0):
-        return cls(w, h, [[value for _ in range(w)] for _ in range(h)])
-
-    @classmethod
-    def from_lines(cls, lines):
-        return cls(len(lines[0]), len(lines), lines)
-
-    def __setitem__(self, p, value):
-        self.lines[p[1]][p[0]] = value
-
-    def __getitem__(self, p):
-        return self.lines[p[1]][p[0]]
-
-    def is_in_grid(self, p) -> bool:
-        return 0 <= p[0] < self.w and 0 <= p[1] < self.h
-
-    def all_coords(self):
-        for x in range(self.w):
-            for y in range(self.h):
-                yield x, y
-
-    def __str__(self):
-        """Display these values as a 2-D grid.
-        Inspired by norvig’s sudoku: http://norvig.com/sudoku.html
-        """
-        width = 1 + max([len(str(self.lines[y][x])) for (x, y) in self.all_coords()])
-        text = ""
-        for line in self.lines:
-            text += ''.join([str(c).center(width) for c in line]) + "\n"
-        return text
+def parse_grid(lines):
+    w = len(lines[0])
+    h = len(lines)
+    lit_points = []
+    for y in range(h):
+        for x in range(w):
+            if lines[y][x] == "#":
+                lit_points.append((x, y))
+    return Grid(0, 0, w, h, lit_points)
 
 
 def parse(input):
     lines = aoc.as_lines(input)
     mapping = lines[0]
-    grid = Grid.from_lines((lines[2:]))
-    return mapping, grid
+    return mapping, parse_grid(lines[2:])
 
 
-def extract9(grid, p):
-    offsets = [(-1, -1), (0, -1), (1, -1),
-               (-1, 0), (0, 0), (1, 0),
-               (-1, 1), (0, 1), (1, 1)]
-    x, y = p
-    out = ''
-    for (dx, dy) in offsets:
-        if grid.is_in_grid((x + dx, y + dy)):
-            out += grid[(x + dx, y + dy)]
-        else:
-            out += '.'
-    return out
+class Grid:
+    def __init__(self, min_x, min_y, max_x, max_y, lit_points):
+        self.max_x = max_x
+        self.max_y = max_y
+        self.min_x = min_x
+        self.min_y = min_y
+        self.lit_points = lit_points
 
+    def all_coords(self):
+        for x in range(self.min_x, self.max_x + 1):
+            for y in range(self.min_y, self.max_y + 1):
+                yield x, y
 
-def grid_to_i(s):
-    return int(s.replace("#", "1").replace(".", "0"), 2)
+    def extract9(self, p):
+        offsets = [(-1, -1), (0, -1), (1, -1),
+                   (-1, 0), (0, 0), (1, 0),
+                   (-1, 1), (0, 1), (1, 1)]
+        x, y = p
+        out = ''
+        for (dx, dy) in offsets:
+            if (x + dx, y + dy) in self.lit_points:
+                out += "1"
+            else:
+                out += "0"
+        return int(out, 2)
 
+    def __str__(self):
+        off_x, off_y = 0, 0
+        if self.min_x < 0:
+            off_x = -self.min_x
+        if self.min_y < 0:
+            off_y = -self.min_y
 
-def all_coords_plus_2(grid):
-    for x in range(-1, grid.w + 1):
-        for y in range(-1, grid.h + 1):
-            yield x, y
+        lines = [["." for _ in range(self.min_x, self.max_x+1)] for _ in range(self.min_y, self.max_y+1)]
+        for (x, y) in self.lit_points:
+            lines[y + off_y][x + off_x] = "#"
+        return "\n".join(["".join(l) for l in lines])
 
 
 def apply(mapping, grid: Grid):
-    grid2 = Grid.from_value(grid.w + 2, grid.h + 2, 0)
-    for (x, y) in all_coords_plus_2(grid):
-        kernel = extract9(grid, (x, y))
-        offset = grid_to_i(kernel)
+    grid2 = Grid(grid.min_x - 1, grid.min_y - 1, grid.max_x + 1, grid.max_y + 1, [])
+
+    for (x, y) in grid2.all_coords():
+        offset = grid.extract9((x, y))
         new_value = mapping[offset]
+        if new_value == "#":
+            grid2.lit_points.append((x, y))
 
-        grid2[(x + 1, y + 1)] = new_value
-
+    print(grid2)
     return grid2
 
 
 def part1(mapping, grid):
-    grid2 = apply(mapping, grid)
-    grid2 = apply(mapping, grid2)
-    nb_lit = 0
-    for c in grid2.all_coords():
-        if grid2[c] == "#":
-            nb_lit += 1
-    # print(grid2)
-    return nb_lit
+    for i in range(2):
+        grid = apply(mapping, grid)
+    return len(grid.lit_points)
 
 
 mapping, grid = parse(input)
 test_mapping, test_grid = parse(test_input)
-# pp.pprint(mapping)
-# print(grid)
-# print(test_grid)
-# print(extract9(test_grid, (2,2)))
-# print(grid_to_i(extract9(test_grid, (2,2))))
+print(test_grid)
 
 # grid2 = apply(test_mapping, test_grid)
-# print(grid2)
-# assert(part1(test_mapping,test_grid) == 35)
-print(part1(mapping, grid))  # not 5447 (too high)
+assert (part1(test_mapping, test_grid) == 35)
+print(part1(mapping, grid))
