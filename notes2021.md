@@ -41,6 +41,13 @@ bits[0:3] # BitArray('0b110')
 bits[0:3].uint # 6
 ```
 
+Day 21:
+ - write article about dynamic programming
+ - solve more problems using DP (CSES?)
+ - upping the ante:
+   - reaching 1000:
+     https://www.reddit.com/r/adventofcode/comments/rlgfyi/2021_day_21_part_3_playing_the_full_game/
+     https://www.reddit.com/r/adventofcode/comments/rlm4p9/2021_day_21_part_3/
 
 ## Some cool other challenges I should complete:
  - other non-finished years
