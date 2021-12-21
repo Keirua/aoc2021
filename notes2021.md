@@ -153,7 +153,11 @@ def find_basin(grid, start):
 # day 11: cellular automaton. Cool to reuse my grid class
 
 # Day 12:
- - nice writeup: https://github.com/mebeim/aoc/blob/master/2021/README.md#day-12---passage-pathing
+ - my own implementation for part 1 (recursive DFS)
+ - read about how to make an iterative DFS for part2 here:
+   https://github.com/mebeim/aoc/blob/master/2021/README.md#day-12---passage-pathing
+   also worth reading: https://github.com/hyper-neutrino/advent-of-code/blob/main/2021/day12p1.py
+
 
 
 # day 15: dijkstra \o/

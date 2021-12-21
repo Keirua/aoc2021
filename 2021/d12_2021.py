@@ -41,16 +41,18 @@ zg-he
 pj-fs
 start-RW"""
 
-from collections import defaultdict
+from collections import defaultdict, deque
 
 
 def parse(input):
     edges = defaultdict(list)
     lines = input.split("\n")
     for line in lines:
-        a, b = line.split("-")
-        edges[a].append(b)
-        edges[b].append(a)
+        a, b = line.strip().split("-")
+        if b != "start":
+            edges[a].append(b)
+        if a != "start":
+            edges[b].append(a)
     return edges
 
 
@@ -81,23 +83,25 @@ class Graph:
         self.visited[u] = 0
 
     def dfs2(self, u="start", v="end"):
-        if (u != "start" and u.islower() and self.visited[u] > 1 and len(self.edges[u]) > 1) or (
-                u != "start" and u.islower() and self.visited[u] > 0 and len(self.edges[u]) == 1) or (
-                u == "start" and self.visited[u] > 0):
-            return
-        self.visited[u] = min(self.visited[u] + 1, 2)
-        self.current_path.append(u)
-        if u == v:
-            self.all_paths.append(self.current_path.copy())
-            self.visited[u] = max(self.visited[u] - 1, 0)
-            self.current_path.pop()
-            return
-        for w in self.edges[u]:
-            if (w != "start" and w.islower() and ((len(self.edges[w]) > 1 and self.visited[w] < 2) or (
-                    len(self.edges[w]) == 1 and self.visited[w] == 0))) or w.isupper():
-                self.dfs2(w, v)
-        self.current_path.pop()
-        self.visited[u] = max(self.visited[u] - 1, 0)
+        queue = deque([(u, set([u]), False)])
+        nb_paths = 0
+        while queue:
+            n, visited, twice = queue.pop()
+            if n == v:
+                nb_paths += 1
+                continue
+            for w in self.edges[n]:
+                if w not in visited or w.isupper():
+                    queue.append((w, visited | set([w]), twice))
+                    continue
+                # w must be lowercase and already visited. No need to add it to the visited set
+                # and set twice to true
+                if twice:
+                    continue
+
+                queue.append((w, visited, True))
+
+        return nb_paths
 
 
 def part1(graph: Graph) -> int:
@@ -108,10 +112,9 @@ def part1(graph: Graph) -> int:
 
 def part2(graph: Graph) -> int:
     graph.reset()
-    graph.dfs2()
-    for p in graph.all_paths:
-        print(",".join(p))
-    return len(graph.all_paths)
+    return graph.dfs2()
+    # for p in graph.all_paths:
+    #     print(",".join(p))
 
 
 graph = Graph(input)
@@ -125,6 +128,7 @@ assert (part1(test_graph) == 10)
 assert (part1(test_graph2) == 19)
 assert (part1(test_graph3) == 226)
 print(part1(graph))
-assert (part2(test_graph) == 36), len(test_graph.all_paths)
+assert (part2(test_graph) == 36)
+print(part2(graph))
 # assert(part2(test_graph2) == 103)
 # assert(part2(test_graph3) == 3509)
