@@ -183,3 +183,7 @@ Of course it has an analytical solution:
  - https://www.reddit.com/r/adventofcode/comments/ri9kdq/2021_day_17_solutions/hoxa0vi/?utm_source=reddit&utm_medium=web2x&context=3
  - https://github.com/mebeim/aoc/blob/master/2021/README.md#day-17---trick-shot
 but writing code was faster that early
+   
+# day 21
+
+part2 was a nice dynamic programming problem, quite happy with my solution
