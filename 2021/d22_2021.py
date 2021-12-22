@@ -42,11 +42,20 @@ def part2(instr):
      - a cube OFF intersects a cube ON -> we remove the difference
      - a cube ON intersects cube ON -> we intersect the 2 cubes in order to not have duplicates
     """
-
-    # a list of all the axis-aligned cubes containing lit cubes
-    lit_cubes = []
     for new_value, coords in instr:
-        if new_value:
+        print(coords, volume(coords))
+    # a list of all the axis-aligned cubes containing lit cubes
+    # lit_cubes = []
+    # for new_value, coords in instr:
+    #     if new_value:
+    #         for l in lit_cubes:
+    #             if cube_intersect(l, coords):
+    #                 raise ValueError("I don’t know what to do")
+    #         lit_cubes.append(coords)
+
+def volume(c):
+    """compute the volume of a cube, given its coordinates"""
+    return (c[1]+1-c[0])*(c[3]+1-c[2])*(c[5]+1-c[4])
 
 def cube_intersect(a, b):
     """do axis-aligned cubes a and b intersect?"""
@@ -56,10 +65,16 @@ def cube_intersect(a, b):
     # and (a.max_y() >= b.min_y() and a.min_y() <= b.max_y())
     # and (a.max_z() >= b.min_z() and a.min_z() <= b.max_z())
 
+# x=10..10,y=10..10,z=10..10 turns on a single cube, 10,10,10 -> volume 1
+assert(volume([10, 10, 10, 10, 10, 10]) == 1)
+# 9..11,y=9..11,z=9..11 is a 3x3x3 cube, with volume 27
+assert(volume([9, 11, 9,11, 9, 11]) == 27)
 
+easy_instr = parse(easy_input)
 medium_instr = parse(medium_example)
 part2_instr = parse(part2_example)
 instr = parse(input)
 # pp.pprint(instr)
 assert(part_1(medium_instr) == 590784)
+print(part2(easy_instr))
 # print(part_1(instr))
