@@ -58,7 +58,7 @@ def part1_list(instr):
     return len(cubes)
 
 
-def part2(instr):
+def part2_csg(instr):
     """
     so in this part, we are making a CSG object with intersection and differences:
     https://www.reddit.com/r/gamedev/comments/q9tvs/constructive_solid_geometry_csg_subtract_algorithm/
@@ -84,6 +84,50 @@ def volume(c):
     """compute the volume of a cube, given its coordinates"""
     return (c[1]+1-c[0])*(c[3]+1-c[2])*(c[5]+1-c[4])
 
+def compress_coords(instructions):
+    x_coords = set()
+    y_coords = set()
+    z_coords = set()
+    for new_val, coords in instructions:
+        x_coords |= set([coords[0], coords[1]])
+        y_coords |= set([coords[2], coords[3]])
+        z_coords |= set([coords[4], coords[5]])
+    x_coords = sorted(x_coords)
+    y_coords = sorted(y_coords)
+    z_coords = sorted(z_coords)
+    return x_coords, y_coords, z_coords
+
+def part2(instructions) -> int:
+    """
+    ok, so I was lost, didn’t want to perform CSG because splitting a cube into many
+    smaller cubes. I opened reddit, a keyword came up: coordinates compression.
+
+    https://www.quora.com/What-is-coordinate-compression-and-what-is-it-used-for?share=1
+    """
+    x_coords, y_coords, z_coords = compress_coords(instructions)
+
+    grid = [[[False for _ in range(len(z_coords)+1)] for _ in range(len(y_coords)+1)] for _ in range(len(x_coords)+1)]
+    for new_value, coords in instructions:
+        xmin, xmax = x_coords.index(coords[0]), x_coords.index(coords[1])
+        ymin, ymax = x_coords.index(coords[2]), x_coords.index(coords[3])
+        zmin, zmax = x_coords.index(coords[4]), x_coords.index(coords[5])
+        for x, y, z in it.product(range(xmin, xmax+1), range(ymin, ymax+1), range(zmin, zmax+1)):
+            try:
+                grid[z][y][x] = new_value
+            except IndexError as i:
+                print(i, x, y, z)
+                exit(0)
+    # Count lit
+    nb_lit = 0
+    # for x,y,z in it.product(range(100+1), range(100+1), range(100+1)):
+    #     if grid[z][y][x] == True:
+    #         nb_lit += 1
+    return nb_lit
+
+    # y_coords.sort()
+    # z_coords.sort()
+    # pp.pprint(x_coords)
+
 def cube_intersect(a, b):
     """do axis-aligned cubes a and b intersect?"""
     # https://stackoverflow.com/a/3631603
@@ -106,6 +150,7 @@ print(easy_instr)
 # assert(part(medium_instr) == 590784)
 # assert(part1_list(medium_instr) == 590784)
 assert(part1_list(easy_instr) == 39), part1_list(easy_instr)
+part2(easy_instr)
 # assert(part2(easy_instr) == 39)
 # print(part2(medium_instr))
 # print(part_1(instr))
