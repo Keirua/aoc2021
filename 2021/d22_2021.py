@@ -6,6 +6,7 @@ pp = pprint.PrettyPrinter(indent=4)
 input = aoc.input_as_string(aoc.challenge_filename(22, 2021))
 easy_input = aoc.input_as_string("input/22_2021_easy.txt")
 medium_example = aoc.input_as_string("input/22_2021_medium.txt")
+part2_example = aoc.input_as_string("input/22_2021_part2.txt")
 
 def parse(input):
     lines = aoc.as_lines(input)
@@ -31,8 +32,34 @@ def part_1(instructions):
             nb_lit += 1
     return nb_lit
 
-# instr  = parse(easy_input)
-instr = parse(medium_example)
-# instr = parse(input)
+def part2(instr):
+    """
+    so in this part, we are making a CSG object with intersection and differences:
+    https://www.reddit.com/r/gamedev/comments/q9tvs/constructive_solid_geometry_csg_subtract_algorithm/
+    https://www.reddit.com/r/gamedev/comments/q9tvs/constructive_solid_geometry_csg_subtract_algorithm/
+    We need to keep track of a giant object which is composed of many cubes, all of them part of the ON cubes.
+    Then we have 2 situations to cover:
+     - a cube OFF intersects a cube ON -> we remove the difference
+     - a cube ON intersects cube ON -> we intersect the 2 cubes in order to not have duplicates
+    """
+
+    # a list of all the axis-aligned cubes containing lit cubes
+    lit_cubes = []
+    for new_value, coords in instr:
+        if new_value:
+
+def cube_intersect(a, b):
+    """do axis-aligned cubes a and b intersect?"""
+    # https://stackoverflow.com/a/3631603
+    return (a[1] >= b[0] and a[0] <= b[1]) and (a[3] >= b[2] and a[2] <= b[3]) and (a[5] >= b[4] and a[4] <= b[5])
+    # return (a[.max_x()] >= b.min_x() and a.min_x() <= b.max_x())
+    # and (a.max_y() >= b.min_y() and a.min_y() <= b.max_y())
+    # and (a.max_z() >= b.min_z() and a.min_z() <= b.max_z())
+
+
+medium_instr = parse(medium_example)
+part2_instr = parse(part2_example)
+instr = parse(input)
 # pp.pprint(instr)
-print(part_1(instr))
+assert(part_1(medium_instr) == 590784)
+# print(part_1(instr))
