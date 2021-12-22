@@ -16,12 +16,12 @@ class TestFuzzDay1_2021(unittest.TestCase):
         263"""
         test_ints = d1_2021.parse(test_input)
 
-        self.assertEqual(d1_2021.part_1(test_ints), 7)
+        self.assertEqual(d1_2021.part1(test_ints), 7)
         self.assertEqual(d1_2021.part_2(test_ints), 5)
 
     @given(ints=st.lists(st.integers()))
     def test_fuzz_part_1(self, ints):
-        d1_2021.part_1(ints=ints)
+        d1_2021.part1(ints=ints)
 
     @given(ints=st.lists(st.integers()))
     def test_fuzz_part_2(self, ints):

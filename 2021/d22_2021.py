@@ -12,7 +12,7 @@ def parse(input):
     lines = aoc.as_lines(input)
     return [(l.startswith("on"), list(map(int, re.findall(r"(-?\d+)", l)))) for l in lines]
 
-def part_1(instructions):
+def part1(instructions):
     grid = [[[False for _ in range(100+1)] for _ in range(100+1)] for _ in range(100+1)]
     for new_value, coords in instructions:
         xmin, xmax = max(-50, coords[0]), min(50, coords[1])
@@ -32,6 +32,32 @@ def part_1(instructions):
             nb_lit += 1
     return nb_lit
 
+def cubies(coords):
+    xmin, xmax = coords[0], coords[1]
+    ymin, ymax = coords[2], coords[3]
+    zmin, zmax = coords[4], coords[5]
+
+    return set([(x, y, z) for x, y, z in it.product(range(xmin, xmax + 1), range(ymin, ymax + 1), range(zmin, zmax + 1))])
+
+def bounded_cubies(coords):
+    xmin, xmax = max(-50, coords[0]), min(50, coords[1])
+    ymin, ymax = max(-50, coords[2]), min(50, coords[3])
+    zmin, zmax = max(-50, coords[4]), min(50, coords[5])
+
+    return set([(x, y, z) for x, y, z in it.product(range(xmin, xmax + 1), range(ymin, ymax + 1), range(zmin, zmax + 1))])
+
+
+def part1_list(instr):
+    cubes = set()
+    for new_value, coords in instr:
+        if new_value:
+            cubes = cubes | bounded_cubies(coords)
+        else:
+            intersection = cubes & bounded_cubies(coords)
+            cubes -= intersection
+    return len(cubes)
+
+
 def part2(instr):
     """
     so in this part, we are making a CSG object with intersection and differences:
@@ -42,8 +68,9 @@ def part2(instr):
      - a cube OFF intersects a cube ON -> we remove the difference
      - a cube ON intersects cube ON -> we intersect the 2 cubes in order to not have duplicates
     """
-    for new_value, coords in instr:
-        print(coords, volume(coords))
+    pass
+
+        # print(coords, volume(coords))
     # a list of all the axis-aligned cubes containing lit cubes
     # lit_cubes = []
     # for new_value, coords in instr:
@@ -71,10 +98,14 @@ assert(volume([10, 10, 10, 10, 10, 10]) == 1)
 assert(volume([9, 11, 9,11, 9, 11]) == 27)
 
 easy_instr = parse(easy_input)
-medium_instr = parse(medium_example)
-part2_instr = parse(part2_example)
-instr = parse(input)
+print(easy_instr)
+# medium_instr = parse(medium_example)
+# part2_instr = parse(part2_example)
+# instr = parse(input)
 # pp.pprint(instr)
-assert(part_1(medium_instr) == 590784)
-print(part2(easy_instr))
+# assert(part(medium_instr) == 590784)
+# assert(part1_list(medium_instr) == 590784)
+assert(part1_list(easy_instr) == 39), part1_list(easy_instr)
+# assert(part2(easy_instr) == 39)
+# print(part2(medium_instr))
 # print(part_1(instr))
