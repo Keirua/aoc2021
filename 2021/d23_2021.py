@@ -12,6 +12,9 @@ class GameState:
     positions: list
     energy: int
 
+    def __lt__(self, other):
+        return self.energy.__lt__(other.energy)
+
 target_positions = {
     "A": [(3, 2), (3, 3)],
     "B": [(5, 2), (5, 3)],
@@ -93,6 +96,14 @@ def find_possible_moves(gs: GameState, start):
     visited = [start]
     queue = deque(walkable_neighbours(gs, start))
     amphipod = get_type(gs, start)
+    if is_target_room(amphipod, start):
+        # if all the amphipods of a given type have reached their room, they should not move anymore
+        if all(get_type(gs, t) == amphipod for t in target_positions[amphipod]):
+            return []
+        # if an amphipod is in the bottom-most room, it should not move
+        if start[1] == 3:
+            return []
+
     while len(queue) > 0:
         t = queue.popleft()
         if t not in visited:
@@ -123,23 +134,32 @@ def move(gs, src, dst):
     gs.positions.remove(src)
     gs.positions.append(dst)
 
-def print_map(gs):
+def map_as_str(gs):
     s = ""
     for l in gs.map:
         s += "".join(l) + "\n"
-    print(s)
+    return s
 
-def part1(gs):
+def print_map(gs):
+    print(map_as_str(gs))
+
+def part1_bfs(gs):
+    """attempt to solve part1 using BFS"""
     stk = [gs]
     visited = []
     wons = []
+    best_won_score = None
     while len(stk) > 0:
         gs = stk.pop()
-        if gs in visited:
+        if gs.map in visited:
             continue
-        visited.append(gs)
+        # print_map(gs)
+        visited.append(gs.map)
         if is_won(gs):
             wons.append(gs)
+            if best_won_score is None or gs.energy < best_won_score:
+                best_won_score = gs.energy
+                print(best_won_score)
             continue
         for p in gs.positions:
             new_positions = find_possible_moves(gs, p)
@@ -147,25 +167,48 @@ def part1(gs):
                 gs2 = deepcopy(gs)
                 gs2.energy += energy_cost(gs2, p, np)
                 move(gs2, p, np)
-                stk.append(gs2)
+                if gs2.map not in visited:
+                    stk.append(gs2)
+    print(best_won_score)
     pp.pprint(stk)
 
+import heapq
+def part1(gs):
+    # def dijkstra_fast(grid, start=(0, 0), end=None):
+    """faster dijkstra implementation using a priority queue"""
+    # dist = {v: 1000000000000000 for v in grid.all_coords()}
+    dist = {}
+    prev = {}
+    dist[map_as_str(gs)] = None
+    Q = [(0, gs)]
+    while len(Q) > 0:
+        min_energy, min_gs = heapq.heappop(Q)
+        # print(min_energy, min_gs)
+        # we may provide an end node, if so we can break early
+        if is_won(min_gs):
+            print("minimum energy: ", min_energy)
+            break
+        # print_map(min_gs)
+        # print(min_energy)
+        curr_dist = None
+        if map_as_str(min_gs) in dist:
+            curr_dist = dist[map_as_str(min_gs)]
+        if curr_dist is not None and min_energy > curr_dist:
+            continue
 
-# def generate_states(s: GameState):
-#     for p in s.positions:
-#         type = s.map[p[1]][p[0]]
-        # # an amphipod in the hallway can only move to a room, and to its target room
-        # if is_hallway(p):
-        #     pass
-        # # if it is in its target room it can move once cell down
-        # if is_target_room(type, p):
-        #     pass
-        # # if it is in a regular room, it can move in the valid cell of the hallway
-        # if is_room(p) and not is_target_room(type, p):
-        #     y_hallway = 1
-        #     for x in valid_hallway_x_stop_positions:
-        #         if is_empty(gs, p):
-        #             gs2 = deepcopy(gs)
+        for p in min_gs.positions:
+            new_positions = find_possible_moves(min_gs, p)
+            # print("\t{!r}, {}".format(new_positions, curr_dist))
+            for np in new_positions:
+                gs2 = deepcopy(min_gs)
+                energy2 = min_gs.energy + energy_cost(min_gs, p, np)
+                move(gs2, p, np)
+                gs2.energy = energy2
+                if (curr_dist is not None and energy2 < curr_dist) or curr_dist is None:
+                    dist[map_as_str(min_gs)] = energy2
+                    prev[map_as_str(min_gs)] = gs2
+                    heapq.heappush(Q, (energy2, gs2))
+    return dist, prev
 
 
 input = aoc.input_as_string(aoc.challenge_filename(23, 2021))
@@ -176,7 +219,11 @@ assert (is_target_room("A", (1, 1)) == False)
 assert (is_target_room("A", (2, 3)) == False)
 assert (is_target_room("A", (3, 2)) == True)
 print_map(gs)
-part1(gs)
+# move(gs, (9, 2), (11, 1))
+part1(gs) # 12769 is too low, 17357 too high, 24971 is too high, 15301 is not ok
+# dijkstra says minimum energy:  10901 (in almost 10mn…)
+
+
 # pp.pprint(gs.positions)
 # move(gs, (3, 2), (1, 1))
 # move(gs, (7, 2), (11, 1))
