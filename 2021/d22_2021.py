@@ -100,9 +100,9 @@ def compress_coords(instructions):
     y_coords = set()
     z_coords = set()
     for new_val, coords in instructions:
-        x_coords |= set([coords[0], coords[1]+1])
-        y_coords |= set([coords[2], coords[3]+1])
-        z_coords |= set([coords[4], coords[5]+1])
+        x_coords |= set([coords[0], coords[1]])
+        y_coords |= set([coords[2], coords[3]])
+        z_coords |= set([coords[4], coords[5]])
     x_coords = sorted(x_coords)
     y_coords = sorted(y_coords)
     z_coords = sorted(z_coords)
@@ -133,13 +133,12 @@ def part2(instructions) -> int:
                 exit(0)
     # Count lit
     nb_lit = 0
-    for z, y, x in it.product(range(len(z_coords)), range(len(y_coords)), range(len(x_coords))):
+    for z, y, x in it.product(range(len(z_coords)-1), range(len(y_coords)-1), range(len(x_coords)-1)):
         if grid[z][y][x]:
-            pass
-            # x_min, x_max = x_coords[x], x_coords[x + 1]
-            # y_min, y_max = y_coords[y], y_coords[y + 1]
-            # z_min, z_max = z_coords[z], z_coords[z + 1]
-            # nb_lit += volume2([x_min, x_max, y_min, y_max, z_min, z_max])
+            x_min, x_max = x_coords[x], x_coords[x + 1]
+            y_min, y_max = y_coords[y], y_coords[y + 1]
+            z_min, z_max = z_coords[z], z_coords[z + 1]
+            nb_lit += volume2([x_min, x_max, y_min, y_max, z_min, z_max])
     return nb_lit
 
 
