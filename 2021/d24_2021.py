@@ -24,15 +24,13 @@ class Alu:
         return self.run_program()
 
     def run_program(self):
+        # print(self.input_data)
         # Then, after MONAD has finished running all of its instructions, it will indicate that the model number was
         # valid by leaving a 0 in variable z. However, if the model number was invalid, it will leave some other
         # non-zero value in z.
         for i in self.instructions:
-            try:
-                self.run_instruction(i)
-            except ValueError:
-                print("valueError Reached")
-                return False
+            self.run_instruction(i)
+            # print("valueError Reached")
         return self.vars["z"] == 1
 
     def get_val(self, name):
@@ -42,6 +40,7 @@ class Alu:
 
     def run_instruction(self, instr):
         # inp a - Read an input value and write it to variable a.
+        # print(instr)
         if instr[0] == "inp":
             assert(instr[1] in valid_vars)
             self.vars[instr[1]] = int(self.input_data[self.input_pos])
@@ -85,14 +84,23 @@ def parse(input):
 
 
 input = aoc.input_as_string(aoc.challenge_filename(24, 2021))
-instructions = parse(input)
-
-sample = "13579246899999"
-a = Alu(instructions)
-
-for i in range(99999999999999, 0, -1):
+# first_inp = aoc.input_as_string("input/first_part_24.txt")
+# first_inp_instructions = parse(first_inp)
+# a = Alu(first_inp_instructions)
+# for i in range(9, 0, -1):
+#     v = str(i)
+#     print("--------------")
+#     print(v)
+#     print (a.run_with(v))
+#     pp.pprint(a.vars)
+second_inp = aoc.input_as_string("input/second_part_24.txt")
+second_instr = parse(second_inp)
+a = Alu(second_instr)
+for i in range(100, 10, -1):
     v = str(i)
     if "0" in v:
         continue
-    if (a.run_with(v)):
-        print(v)
+    print("--------------")
+    print(v)
+    print (a.run_with(v))
+    pp.pprint(a.vars)
