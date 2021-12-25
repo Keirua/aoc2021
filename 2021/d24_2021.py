@@ -43,6 +43,7 @@ class Alu:
         # print(instr)
         if instr[0] == "inp":
             assert(instr[1] in valid_vars)
+            pp.pprint(self.vars)
             self.vars[instr[1]] = int(self.input_data[self.input_pos])
             self.input_pos += 1
             return
@@ -82,25 +83,40 @@ def parse(input):
     instructions = [l.rstrip().split(" ") for l in aoc.as_lines(input)]
     return instructions
 
+# 14 inp w. w is NEVER in the first part of another instruction
+# first block as python code:
+# inp w
+# x = 1
+# y = 16+w (so 17 <= z <= 25)
+# z = 16+w (so 17 <= z <= 25)
+# second block as python code:
+#
+# inp w
+# x = 1
+# y = (w + 11)
+# z = z*26+(w + 11)
 
 input = aoc.input_as_string(aoc.challenge_filename(24, 2021))
-# first_inp = aoc.input_as_string("input/first_part_24.txt")
-# first_inp_instructions = parse(first_inp)
-# a = Alu(first_inp_instructions)
-# for i in range(9, 0, -1):
-#     v = str(i)
-#     print("--------------")
-#     print(v)
-#     print (a.run_with(v))
-#     pp.pprint(a.vars)
-second_inp = aoc.input_as_string("input/second_part_24.txt")
-second_instr = parse(second_inp)
-a = Alu(second_instr)
-for i in range(100, 10, -1):
+a = Alu(parse(input))
+# print(a.run_with("99999999999999"))
+# print(a.run_with("13111111111111"))
+first_inp = aoc.input_as_string("input/first_part_24.txt")
+first_inp_instructions = parse(first_inp)
+a = Alu(first_inp_instructions)
+for i in range(9, 0, -1):
     v = str(i)
-    if "0" in v:
-        continue
     print("--------------")
     print(v)
     print (a.run_with(v))
     pp.pprint(a.vars)
+# second_inp = aoc.input_as_string("input/second_part_24.txt")
+# second_instr = parse(second_inp)
+# a = Alu(second_instr)
+# for i in range(100, 10, -1):
+#     v = str(i)
+#     if "0" in v:
+#         continue
+#     print("--------------")
+#     print(v)
+#     print (a.run_with(v))
+#     pp.pprint(a.vars)
