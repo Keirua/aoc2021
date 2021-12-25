@@ -30,11 +30,11 @@ class Alu:
         # valid by leaving a 0 in variable z. However, if the model number was invalid, it will leave some other
         # non-zero value in z.
         for i in self.instructions:
-            if self.nb_inp > max_nb_inp:
-                break
+            # if self.nb_inp > max_nb_inp:
+            #     break
             self.run_instruction(i)
             # print("valueError Reached")
-        return self.vars["z"] == 1
+        return self.vars["z"] == 0
 
     def get_val(self, name):
         if is_var(name):
@@ -47,7 +47,7 @@ class Alu:
         if instr[0] == "inp":
             assert(instr[1] in valid_vars)
             assert(self.input_pos < len(self.input_data)), len(self.input_data)
-            pp.pprint(self.vars)
+            # pp.pprint(self.vars)
             self.vars[instr[1]] = int(self.input_data[self.input_pos])
             self.input_pos += 1
             self.nb_inp += 1
@@ -114,10 +114,24 @@ def parse(input):
 
 input = aoc.input_as_string(aoc.challenge_filename(24, 2021))
 a = Alu(parse(input))
+
+for i in range(100000000000000, 10000000000000, -1):
+    v = str(i)
+    if "0" in v:
+        continue
+    # print("--------------")
+    # print(v)
+    # print (a.run_with(v))
+    if a.run_with(v) == True:
+        pp.pprint(a.vars)
+        print(i)
+
+        break
+
 # print(a.run_with("99999999999999"))
 # print(a.run_with("13111111111111"))
-first_inp = aoc.input_as_string("input/first_part_24.txt")
-first_inp_instructions = parse(first_inp)
+# first_inp = aoc.input_as_string("input/first_part_24.txt")
+# first_inp_instructions = parse(first_inp)
 # a = Alu(first_inp_instructions)
 # for i in range(9, 0, -1):
 #     v = str(i)
@@ -138,16 +152,16 @@ first_inp_instructions = parse(first_inp)
 #     pp.pprint(a.vars)
 # third_instr = parse(aoc.input_as_string("input/third_part_24.txt"))
 # a = Alu(third_instr)
-small_values = []
-for i in range(1000000, 100000, -1):
-    v = str(i)
-    if "0" in v:
-        continue
-    print("--------------")
-    print(v)
-    print(a.run_with(v, 3))
-    # print(a.vars["z"])
-    print(a.vars["z"])
-    if a.vars["z"] < 11800:
-        small_values.append(v)
-pp.pprint(small_values)
+# small_values = []
+# for i in range(100000, 10000, -1):
+#     v = str(i)
+#     if "0" in v:
+#         continue
+#     print("--------------")
+#     print(v)
+#     print(a.run_with(v, 4))
+#     # print(a.vars["z"])
+#     print(a.vars["z"])
+#     if a.vars["z"] < 11800:
+#         small_values.append(v)
+# pp.pprint(small_values)
