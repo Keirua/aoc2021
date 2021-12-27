@@ -49,11 +49,19 @@ def solve(inp, occurences) -> str:
     return "".join(map(str, inp))
 
 
-def gen_tpl(w, zdivisor, xadder, yadder):
-    return f"""    z = z/{zdivisor}
-    if (z%26)+({xadder}) != input[{w}]:
-	     z = 26*z + input[{w}] + ({yadder})
+def gen_tpl(w, zdivisor, check, yadder):
+    return f"""if {check} > 0:
+        z = z/1
+        z = 26 * z + (input[{w}]) + {yadder}
+    else:
+        z = z//26
+        if (z + {check} != input[{w}]):
+            z = 26*z + input[{w}] + {yadder}
 """
+#     return f"""    z = z/{zdivisor}
+#     if (z%26)+({xadder}) != input[{w}]:
+# 	     z = 26*z + input[{w}] + ({yadder})
+# """
 
 
 def generate_bruteforce(input):
