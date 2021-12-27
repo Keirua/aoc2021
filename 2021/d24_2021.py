@@ -112,7 +112,90 @@ def parse(input):
 # 	x = 0
 # 	y = 0
 
+# It seems the program is composed of 14 times the following pattern:
+# inp w
+# mul x 0
+# add x z
+# mod x 26
+# div z 1  -> value change
+# add x 11 -> value change
+# eql x w
+# eql x 0
+# mul y 0
+# add y 25
+# mul y x
+# add y 1
+# mul z y
+# mul y 0
+# add y w
+# add y 16 -> value change
+# mul y x
+# add z y
+
+# inp w
+# mul x 0
+# add x z
+# mod x 26
+# div z zdivisor
+# add x xadder
+# eql x w
+# eql x 0
+# mul y 0
+# add y 25
+# mul y x
+# add y 1
+# mul z y
+# mul y 0
+# add y w
+# add y yadder
+# mul y x
+# add z y
+#
+#
+# z = z/zdivisor
+# if z%26+xadder != w:
+# 	x = 1
+# 	z = 26*z + w + yadder
+# 	y = w + yadder
+# else:
+# 	x = 0
+# 	y = 0
+# 	z = z
+#
+# can be further simplified into:
+#
+# z = z/zdivisor
+# if z%26+xadder != w:
+# 	z = 26*z + w + yadder
+#
+# since we do not care about x and y
+
+supposed_structure = [
+	["inp", "w", "0"],
+	["mul", "x", "0"],
+	["add", "x", "z"],
+	["mod", "x", r"(.*)"],
+	["div", "z", r"(.*)"],
+	["add", "x", "11"],
+	["eql", "x", "w"],
+	["eql", "x", "0"],
+	["mul", "y", "0"],
+	["add", "y", "25"],
+	["mul", "y", "x"],
+	["add", "y", "1"],
+	["mul", "z", "y"],
+	["mul", "y", "0"],
+	["add", "y", "w"],
+	["add", "y", r"(.*)"],
+	["mul", "y", "x"],
+	["add", "z", "y"],
+]
+
+
 input = aoc.input_as_string(aoc.challenge_filename(24, 2021))
+def extract_indices(a:Alu):
+    pass
+
 a = Alu(parse(input))
 
 for i in range(100000000000000, 10000000000000, -1):
@@ -125,7 +208,6 @@ for i in range(100000000000000, 10000000000000, -1):
     if a.run_with(v) == True:
         pp.pprint(a.vars)
         print(i)
-
         break
 
 # print(a.run_with("99999999999999"))
