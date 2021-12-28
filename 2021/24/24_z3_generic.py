@@ -7,8 +7,7 @@ solver = z3.Optimize()
 zero, one = z3.BitVecVal(0, 64), z3.BitVecVal(1, 64)
 digits = [z3.BitVec(f'd_{i}', 64) for i in range(14)]
 for d in digits:
-    solver.add(1 <= d)
-    solver.add(d <= 9)
+    solver.add(And(1 <= d, d <= 9))
 digit_input = iter(digits)
 
 registers = {r: zero for r in 'xyzw'}
