@@ -223,6 +223,7 @@ https://github.com/p88h/aoc2021/blob/main/other/day24.py
 Clean and concise solution (use the 3 params, then solves backwards)
 https://gist.github.com/jkseppan/1e36172ad4f924a8f86a920e4b1dc1b1
   
-- DFS:
+- DFS + memoization (generic solution: runs the program with various inputs, so it could work for any program):
 I noticed the input code had 14 very similar chunks that each took a single input, and the only thing that mattered about the state between chunks was z and input w registers -- x and y are zeroed out each time. So I basically just did a DFS with depth 14 and memoization on the branches, trying to find z=0 at the final step. And I added a cache for the execution to speed up part 2. Part 2 took 8 minutes runtime.
 https://github.com/WilliamLP/AdventOfCode/blob/master/2021/day24.py
+  
