@@ -1,5 +1,7 @@
 import z3
 
+# https://www.reddit.com/r/adventofcode/comments/rnejv5/2021_day_24_solutions/hpshymr/
+
 prog = [line.split() for line in open('input/24_2021.txt', 'r').read().splitlines()]
 
 solver = z3.Optimize()

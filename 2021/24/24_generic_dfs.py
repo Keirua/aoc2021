@@ -1,4 +1,7 @@
 # https://github.com/WilliamLP/AdventOfCode/blob/master/2021/day24.py
+# There is nothing particularly elegant about my solution but I'm posting it in case anyone is interested, and it gets there!
+#
+# I noticed the input code had 14 very similar chunks that each took a single input, and the only thing that mattered about the state between chunks was z and input w registers -- x and y are zeroed out each time. So I basically just did a DFS with depth 14 and memoization on the branches, trying to find z=0 at the final step. And I added a cache for the execution to speed up part 2. Part 2 took 8 minutes runtime.
 REGS = {'w': 0, 'x': 1, 'y': 2, 'z': 3}
 
 def execute(line, regs, input_arr):
@@ -67,19 +70,29 @@ def find(chunks, pos, z):
     MEMO[key] = found
     return found
 
-def main():
-    code = []
-    for line in open('input/24_2021.txt'):
-        tokens = line.strip().split(' ')
-        code.append((tokens[0], tokens[1], tokens[2] if len(tokens) > 2 else None))
 
+def extract_chunks_from_code(code):
     chunks = []
     rest = code
     while rest:
         chunks.append(rest[0:18])
         rest = rest[18:]
+    return chunks
+
+
+def parse_code(filename):
+    code = []
+    for line in open(filename):
+        tokens = line.strip().split(' ')
+        code.append((tokens[0], tokens[1], tokens[2] if len(tokens) > 2 else None))
+    return code
+
+def main():
+    code = parse_code('input/24_2021.txt')
+    chunks = extract_chunks_from_code(code)
 
     res = find(chunks, 0, 0)
     print(f"Part 2 Answer: {''.join([str(ch) for ch in res])}")
+
 
 main()
