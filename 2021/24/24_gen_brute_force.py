@@ -26,27 +26,6 @@ add z y"""
     return div_check_add
 
 
-def solve(inp, occurences) -> str:
-    """Solve the problem
-    """
-    zstack = []
-    for i, oc in enumerate(occurences):
-        div, chk, add = list(map(int, oc))
-        if div == 1:
-            zstack.append((i, add))
-        elif div == 26:
-            j, add = zstack.pop()
-            inp[i] = inp[j] + add + chk
-            if inp[i] > 9:
-                inp[j] = inp[j] - (inp[i] - 9)
-                inp[i] = 9
-            if inp[i] < 1:
-                inp[j] = inp[j] + (1 - inp[i])
-                inp[i] = 1
-        else:
-            raise (ValueError(f"unsupported div value: {div}"))
-    assert (len(zstack) == 0), len(zstack)  # the stack must be 0 in order for z to reach 0 at the end
-    return "".join(map(str, inp))
 
 
 def gen_tpl(w, zdivisor, check, yadder):
