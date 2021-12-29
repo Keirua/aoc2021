@@ -37,3 +37,4 @@ def solve(part, div_check_add):
 input = open("input/24_2021.txt").read()
 div_check_add = extract_parameters(input)
 print(solve(1, div_check_add))
+print(solve(2, div_check_add))

@@ -1,25 +1,31 @@
 from z3 import *
 from common24 import extract_parameters
 
-def solve(div_check_add: list, should_maximize:bool=True) -> int:
-    s = Optimize()
+
+def solve(div_check_add: list, part: int) -> int:
+    solver = Optimize()
     z = 0  # this is our running z, which has to be zero at the start and end
-    v = 0  # this is the value from concatenating our digits
+    # We have 14 inputs, they all are integers between 1 and 9 included
     ws = [Int(f'w{i}') for i in range(14)]
-    for (i,[div,check,add]) in enumerate(div_check_add):
-        v = v * 10 + ws[i]
-        s.add(And(ws[i] >= 1, ws[i] <= 9))
+    for i in range(14):
+        solver.add(And(ws[i] >= 1, ws[i] <= 9))
+    # The value where we concatenate our input digits
+    digits_base_10 = Int(f"digits_base_10")
+    solver.add(digits_base_10 == sum((10 ** i) * d for i, d in enumerate(ws[::-1])))
+    # We implement the subroutine as a list of constraints, one for each of the 14 blocks:
+    for (i, [div, check, add]) in enumerate(div_check_add):
         z = If(z % 26 + check == ws[i], z / div, z / div * 26 + ws[i] + add)
-    s.add(z == 0)
-    if should_maximize:
-        s.maximize(v)
+    # The final z value must be zero
+    solver.add(z == 0)
+    if part == 1:
+        solver.maximize(digits_base_10)
     else:
-        s.minimize(v)
-    assert(s.check() == sat)
-    return s.model().eval(v)
+        solver.minimize(digits_base_10)
+    assert (solver.check() == sat)  # the solver must find a solution
+    return solver.model().eval(digits_base_10)
 
 
 input = open("input/24_2021.txt").read()
 div_check_add = extract_parameters(input)
-print(solve(div_check_add, True))
-print(solve(div_check_add, False))
+print(solve(div_check_add, 1))
+print(solve(div_check_add, 2))

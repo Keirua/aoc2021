@@ -1,6 +1,14 @@
 import re
 
 
+def parse_code(instructions: str) -> list:
+    code = []
+    for line in instructions.splitlines():
+        tokens = line.strip().split(' ')
+        code.append((tokens[0], tokens[1], tokens[2] if len(tokens) > 2 else None))
+    return code
+
+
 def extract_parameters(program):
     repeated_program = r"""inp w
 mul x 0

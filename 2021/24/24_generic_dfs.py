@@ -1,30 +1,36 @@
+from common24 import parse_code
+
 # https://github.com/WilliamLP/AdventOfCode/blob/master/2021/day24.py
 # There is nothing particularly elegant about my solution but I'm posting it in case anyone is interested, and it gets there!
 #
 # I noticed the input code had 14 very similar chunks that each took a single input, and the only thing that mattered about the state between chunks was z and input w registers -- x and y are zeroed out each time. So I basically just did a DFS with depth 14 and memoization on the branches, trying to find z=0 at the final step. And I added a cache for the execution to speed up part 2. Part 2 took 8 minutes runtime.
 REGS = {'w': 0, 'x': 1, 'y': 2, 'z': 3}
 
+
 def execute(line, regs, input_arr):
-    instr, reg, operand = line
-    if instr == 'inp':
-        regs[REGS[reg]] = int(input_arr.pop(0))
+    instruction, register, operand = line
+    if instruction == 'inp':
+        regs[REGS[register]] = int(input_arr.pop(0))
     else:
         if operand in REGS.keys():
             n = regs[REGS[operand]]
         else:
             n = int(operand)
-        if instr == 'add':
-            regs[REGS[reg]] += n
-        elif instr == 'mul':
-            regs[REGS[reg]] *= n
-        elif instr == 'mod':
-            regs[REGS[reg]] %= n
-        elif instr == 'div':
-            regs[REGS[reg]] //= n
-        elif instr == 'eql':
-            regs[REGS[reg]] = 1 if regs[REGS[reg]] == n else 0
+        if instruction == 'add':
+            regs[REGS[register]] += n
+        elif instruction == 'mul':
+            regs[REGS[register]] *= n
+        elif instruction == 'mod':
+            regs[REGS[register]] %= n
+        elif instruction == 'div':
+            regs[REGS[register]] //= n
+        elif instruction == 'eql':
+            regs[REGS[register]] = 1 if regs[REGS[register]] == n else 0
+
 
 MEMO2 = {}
+
+
 def execute_all(chunks, pos, input, z):
     key = f'{pos} {input} {z}'
     if key in MEMO2:
@@ -37,8 +43,11 @@ def execute_all(chunks, pos, input, z):
     MEMO2[key] = res
     return res
 
+
 MEMO = {}
 MIN_Z = 999999
+
+
 def find(chunks, pos, z):
     global MIN_Z
 
@@ -50,9 +59,9 @@ def find(chunks, pos, z):
     # PART 1
     # for i in (9,8,7,6,5,4,3,2,1):
     # PART 2
-    for i in (1,2,3,4,5,6,7,8,9):
+    for i in (1, 2, 3, 4, 5, 6, 7, 8, 9):
         exec_result = execute_all(chunks, pos, i, z)
-        if(pos == 13):
+        if (pos == 13):
             if abs(exec_result) < MIN_Z:
                 print(f'Min z {exec_result}')
                 MIN_Z = abs(exec_result)
@@ -80,15 +89,8 @@ def extract_chunks_from_code(code):
     return chunks
 
 
-def parse_code(filename):
-    code = []
-    for line in open(filename):
-        tokens = line.strip().split(' ')
-        code.append((tokens[0], tokens[1], tokens[2] if len(tokens) > 2 else None))
-    return code
-
 def main():
-    code = parse_code('input/24_2021.txt')
+    code = parse_code(open('input/24_2021.txt').read())
     chunks = extract_chunks_from_code(code)
 
     res = find(chunks, 0, 0)
