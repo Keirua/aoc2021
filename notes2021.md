@@ -1,11 +1,25 @@
 
-# 2021
+# Some cool links
 
-Scatterplot per resolution time:
-https://www.maurits.vdschee.nl/scatterplot/
+## Some nice community links:
 
-A short history of Advent problems (well, since 2017, anyway):
-https://www.reddit.com/r/adventofcode/comments/kjuxkj/a_short_history_of_advent_problems_well_since/
+ - [Scatterplot of the resolution times](https://www.maurits.vdschee.nl/scatterplot/)
+ - [A list of the nice problems since 2017](https://www.reddit.com/r/adventofcode/comments/kjuxkj/a_short_history_of_advent_problems_well_since/)
+ - [a browser extension for extra stats in private leaderboards](https://github.com/jeroenheijmans/advent-of-code-charts)
+
+## Cool external implementations
+
+ - day 1: [implementation in Piet](https://www.reddit.com/r/adventofcode/comments/r6v23p/day_1_part_1_a_solution_in_piet_a_language_where/) (an esoteric, visual, stack-based language), explained a bit. 
+ - day 3: [fun visualization with pygames](https://www.reddit.com/r/adventofcode/comments/r7x4yk/2021_day_3_part_2pygame_oxy_filter/)
+ - day 4: [nice visualization with Love](https://www.reddit.com/r/adventofcode/comments/r8wq0c/2021_day_4_bingo_blinkenlights/)
+ - [all of AoC 2021 in 17ms](https://www.reddit.com/r/adventofcode/comments/rozxsb/aoc_2021_highlyoptimized_solutions_in_rust_17ms/)
+
+## Some cool other challenges I should complete
+ - other non-finished years
+ - CSES: https://cses.fi/problemset/ (worth going through https://www.geeksforgeeks.org/top-algorithms-and-data-structures-for-competitive-programming/, or similar like https://cp-algorithms.com/?)
+ - https://www.reddit.com/r/adventofcode/comments/r99sio/where_to_find_other_programming_challenges/
+ - cryptopals
+
 
 ## Todo (would be nice to dig a bit more)
 
@@ -26,7 +40,10 @@ day 7:
 day 8:
  - bruteforce the segments, in order to see if I can find the wire layout, à la J. Paulson: https://www.youtube.com/watch?v=DhQPrF-LBoE
  - write a cleaner version
- - see if I can implement it with Z3
+
+day 9:
+ - dfs is nice but union-find seems to be way faster: https://github.com/aldanor/aoc-2021/blob/f47999208d7ea2a6ffd3cfd5ad47e6188c0c3755/src/day09/mod.rs
+ - 4 connected-component labelling: https://en.wikipedia.org/wiki/Connected-component_labeling
 
 Day 15:
  - lookup how a priority queue is implemented
@@ -48,7 +65,7 @@ bits[0:3].uint # 6
 ```
 
 Day 21:
- - write article about dynamic programming
+ - [x] write article about dynamic programming
  - solve more problems using DP (CSES?)
  - upping the ante:
    - reaching 1000:
@@ -59,17 +76,9 @@ Read things about union/find
 
 
 
-## Some cool other challenges I should complete:
- - other non-finished years
- - CSES: https://cses.fi/problemset/ (worth going through https://www.geeksforgeeks.org/top-algorithms-and-data-structures-for-competitive-programming/, or similar like https://cp-algorithms.com/?)
- - https://www.reddit.com/r/adventofcode/comments/r99sio/where_to_find_other_programming_challenges/
- - cryptopals
 
-## Cool external implementations
 
- - day 1: implementation in Piet (an esoteric, visual, stack-based language), explained a bit: https://www.reddit.com/r/adventofcode/comments/r6v23p/day_1_part_1_a_solution_in_piet_a_language_where/
- - day 3: fun visualization with pygames: https://www.reddit.com/r/adventofcode/comments/r7x4yk/2021_day_3_part_2pygame_oxy_filter/
- - day 4: nice visualization with Love: https://www.reddit.com/r/adventofcode/comments/r8wq0c/2021_day_4_bingo_blinkenlights/
+
 
 ## Day 4
 
@@ -99,7 +108,6 @@ Harder:
  - https://www.reddit.com/r/adventofcode/comments/r9zwj0/2021_day_5_unofficial_part_4_100000_long_vents/
  - https://www.reddit.com/r/adventofcode/comments/r9hpfs/2021_day_5_bigger_vents/hnf8obo/?context=3
 
-
 ## Day 6
 
 Like everybody I guess:
@@ -120,19 +128,16 @@ https://www.reddit.com/r/adventofcode/comments/ra88up/2021_day_6_part_4_day_goog
 ## Day 7
 
 Went for a bruteforce approach, short and quick anyway.
-A solution involving the median for part1 works (and mean for part2):
- - proof: https://www.reddit.com/r/adventofcode/comments/rawxad/2021_day_7_part_2_i_wrote_a_paper_on_todays/
- - not very mathematical talk: https://www.reddit.com/r/adventofcode/comments/rar7ty/2021_day_7_solutions/hnkd58g/?utm_source=share&utm_medium=web2x&context=3
-More interestingly: median can be computed in O(n) time:
-https://rcoh.me/posts/linear-time-median-finding/
+[Someone explained](https://www.reddit.com/r/adventofcode/comments/rawxad/2021_day_7_part_2_i_wrote_a_paper_on_todays/) that part1 can be solved with the **median**, and part 2 around the **mean**.
+
+More interestingly : it led me to discover that the **[median can be computed in O(n) time](https://rcoh.me/posts/linear-time-median-finding/)** using a variant of quicksort.
 
 ## Day 8 - 7-segment display
 
 My implementation sucked.
- - it might be a good exercise to revisit it with Z3 (https://www.reddit.com/r/adventofcode/comments/rbwnh5/2021_day_8_can_it_be_solved_as_a_constraint/)
- - a simple(r, slightly) solution explained visually: https://www.reddit.com/r/adventofcode/comments/rbvpui/2021_day_8_part_2_my_logic_on_paper_i_used_python/
+ - a simple(r, slightly) solution [explained visually](https://www.reddit.com/r/adventofcode/comments/rbvpui/2021_day_8_part_2_my_logic_on_paper_i_used_python/)
  - a clever solution involves bitmasks: https://www.reddit.com/r/adventofcode/comments/rc5s3z/comment/hntdb91/?utm_source=share&utm_medium=web2x&context=3
- - 2 nice approaches from Jonathan Paulson: https://www.youtube.com/watch?v=DhQPrF-LBoE
+ - 2 nice approaches from [Jonathan Paulson](https://www.youtube.com/watch?v=DhQPrF-LBoE)
     - bruteforcing the segment values. Slow (40s), but fast to code. Todo: code this approach?
     - identifying the segment values with logic. Fast (0.3s) but slow to code ;). Much cleaner than mine
 
@@ -159,8 +164,6 @@ def find_basin(grid, start):
     return basin
 ```
 
-# day 10: token parsing (validation of the structure of ()<>[]{} and completion)
-# day 11: cellular automaton. Cool to reuse my grid class
 
 # Day 12:
  - my own implementation for part 1 (recursive DFS)
@@ -168,10 +171,10 @@ def find_basin(grid, start):
    https://github.com/mebeim/aoc/blob/master/2021/README.md#day-12---passage-pathing
    also worth reading: https://github.com/hyper-neutrino/advent-of-code/blob/main/2021/day12p1.py
 
-
-
 # day 15: dijkstra \o/
-my grid class was useful again
+
+My grid class was useful again
+
 ```python
 import heapq
 def dijkstra_fast(grid:Grid, start=(0, 0), end=None):
@@ -197,46 +200,21 @@ def dijkstra_fast(grid:Grid, start=(0, 0), end=None):
 
     return dist, prev
 ```
-
-# day 17
-A simple mechanic speed/acceleration problem
-Of course it has an analytical solution:
- - https://www.reddit.com/r/adventofcode/comments/ri9kdq/2021_day_17_solutions/hoxa0vi/?utm_source=reddit&utm_medium=web2x&context=3
- - https://github.com/mebeim/aoc/blob/master/2021/README.md#day-17---trick-shot
-but writing code was faster that early
    
 # day 21
 
 part2 was a nice dynamic programming problem, quite happy with my solution
 
+# Day 22
+
+ - using coordinate compression
+ - seems to be a [clique finding problem](https://en.wikipedia.org/wiki/Clique_problem) ?
+   - Bron–Kerbosch_algorithm: https://en.wikipedia.org/wiki/Bron%E2%80%93Kerbosch_algorithm
+
 # day 24
 
- - on clever bruteforcing: https://www.mattkeeter.com/blog/2021-12-27-brute/
- - reverse engineering the ALU program:
-https://topaz.github.io/paste/#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
-https://github.com/kemmel-dev/AdventOfCode2021/blob/master/day24/AoC%20Day%2024.pdf
+ - wrote an article on the topic that summarizes many approaches
 
-```python
-# https://www.reddit.com/r/adventofcode/comments/rnejv5/comment/hpuaphy/?utm_source=share&utm_medium=web2x&context=3
-To understand what's going on, note the code for each block of 18 instructions reduces to the subroutine (thinking of z as a stack)
+# day 25
 
-x = z % 26  # the last element of z
-z /= zdiv  # if dz == 26, pop the last element of z
-if x != w - p:
-    z = 26 * z + w + q   # push w + q to z
-
-…
-
-We have a bunch of equations that look like w1 + 15 = w14 + 11, and we simply solve them in the way that's most favorable for the part of the problem. In part 1, we want to choose as large a number as possible for d1, and since d1 = d14 - 4, we can see that the biggest digit possible for d1 is 9 - 4 = 5. We apply the same logic to d2, d3, etc. and can find all of the digits.
-```
-
-
- - solving the problem using symbolic calculation:
-https://www.reddit.com/r/adventofcode/comments/rnwz9p/2021_day_24_solving_the_alu_programmatically_with/
-https://www.reddit.com/r/adventofcode/comments/rnejv5/2021_day_24_solutions/hpu84cj/
-https://github.com/p88h/aoc2021/blob/main/other/day24.py
-
-- DFS + memoization (generic solution: runs the program with various inputs, so it could work for any program):
-I noticed the input code had 14 very similar chunks that each took a single input, and the only thing that mattered about the state between chunks was z and input w registers -- x and y are zeroed out each time. So I basically just did a DFS with depth 14 and memoization on the branches, trying to find z=0 at the final step. And I added a cache for the execution to speed up part 2. Part 2 took 8 minutes runtime.
-https://github.com/WilliamLP/AdventOfCode/blob/master/2021/day24.py
-  
+ - the [BML traffic model](https://en.wikipedia.org/wiki/Biham%E2%80%93Middleton%E2%80%93Levine_traffic_model)
