@@ -47,6 +47,7 @@ day 9:
 
 Day 15:
  - lookup how a priority queue is implemented
+   - dijkstra can be sped up even more with ad-hoc data structure, like Dial's algorithm (https://cp-algorithms.com/graph/01_bfs.html)
  - read about other cool graph algorithms:
    - ford-bellman (slower dijkstra that works on with negative weights: https://en.wikipedia.org/wiki/Bellman%E2%80%93Ford_algorithm)
    - graph coloring: https://en.wikipedia.org/wiki/Graph_coloring#Algorithms
@@ -200,7 +201,7 @@ def dijkstra_fast(grid:Grid, start=(0, 0), end=None):
 
     return dist, prev
 ```
-   
+
 # day 21
 
 part2 was a nice dynamic programming problem, quite happy with my solution

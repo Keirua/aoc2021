@@ -4,6 +4,7 @@ import numpy as np
 # https://www.reddit.com/r/adventofcode/comments/ra3f5i/2021_day_6_part_3_day_googol/
 modulo_part3 = 10 ** 20
 
+# Writing the matrix is explained for many situations here: https://www.hackerearth.com/practice/notes/matrix-exponentiation-1/
 
 # with U = vector containing [u0, …, u8], we can describe the recurrence relation f like this:
 # f_{n+1}(U) = [
