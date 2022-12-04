@@ -1,0 +1,121 @@
+#!/usr/bin/python3
+import os
+import sys
+import argparse
+import datetime
+import configparser
+import time
+import urllib.request
+import shutil
+import aoc
+
+
+def get_yd_parser(cli_description: str = ""):
+    """
+    :param cli_description: the description that appears on the command line
+    :return:
+    Generates an ArgumentParser with the year and day options set
+    """
+    year, day = get_current_year_and_day()
+    argument_parser = argparse.ArgumentParser(description=cli_description, formatter_class=argparse.RawTextHelpFormatter)
+    argument_parser.add_argument('-d', '--day', type=int, default=day)
+    argument_parser.add_argument('-y', '--year', type=int, default=year)
+
+    return argument_parser
+
+
+def get_current_year_and_day() -> (int, int):
+    currentDateTime = datetime.datetime.now()
+    date = currentDateTime.date()
+    year = date.strftime("%Y")
+    day = date.strftime("%d")
+    return year, day
+
+def get_year_day() -> (int, int):
+    parser = get_yd_parser()
+    args = parser.parse_args(sys.argv[2:])
+    return args.year, args.day
+
+def load_config(filename:str="settings.ini"):
+    config = configparser.ConfigParser()
+    config.read(filename)
+
+    return config["settings"]["session"]
+
+class AocGo(object):
+    def __init__(self):
+        parser = argparse.ArgumentParser(
+            usage="""git <command> [<args>]
+The git commands are:add    Add a file from working directory to the staging area.
+commit Commit a file from staging area to the local repository.
+ """)
+        parser.add_argument("command", help="go commands")
+        parser.add_argument("-v","--version", help="show version and exit", action="version", version='1.0')
+
+        args = parser.parse_args(sys.argv[1:2])
+        getattr(self, args.command)()
+
+    def open(self):
+        """opens a browser with the requested problem"""
+        year, day = get_year_day()
+        url = f"https://adventofcode.com/{year}/day/{day}"
+        os.system(f"xdg-open {url}")
+
+    def bootstrap(self):
+        self.download()
+        self.template()
+        self.run()
+
+    def download(self):
+        session_cookie = load_config("settings.ini")
+        year, day = get_year_day()
+        download_challenge(year, day, session_cookie)
+
+    def run(self):
+        year, day = get_year_day()
+        t1 = time.time()
+        os.system(f"python3 {code_filename(day, year)}")
+        t2 = time.time()
+        print(f"ran in {t2-t1}s")
+
+    def template(self):
+        year, day = get_year_day()
+        tpl = get_template(day, year)
+        if not os.path.exists(code_filename(day, year)):
+            with open(code_filename(day, year), 'w') as f:
+                f.write(tpl)
+
+def code_filename(day, year):
+    return f"{year}/d{day}_{year}.py"
+
+def download_challenge(year, day, session_cookie):
+    """
+    Downloads a challenge from AoC.
+    The url pattern is as follow:
+    https://adventofcode.com/2020/day/1/input
+    The header should contain a session cookie.
+    """
+
+    url = f"https://adventofcode.com/{year}/day/{day}/input"
+    file_name = aoc.challenge_filename(day, year)
+
+    request = urllib.request.Request(url)
+    request.add_header("Cookie", f"session={session_cookie}")
+
+    print(url)
+    with urllib.request.urlopen(request) as response, open(file_name, 'wb') as out_file:
+        shutil.copyfileobj(response, out_file)
+
+def get_template(day, year):
+    return f"""import aoc
+import re, pprint, itertools as it
+pp = pprint.PrettyPrinter(indent=4)
+
+input = open(aoc.challenge_filename({day}, {year}))
+lines = aoc.as_lines(input)
+
+pp.pprint(lines)
+"""
+
+if __name__ == "__main__":
+    AocGo()
