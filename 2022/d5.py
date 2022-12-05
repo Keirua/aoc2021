@@ -15,5 +15,15 @@ print(stacks)
 moves = []
 for (nb, src, dst) in re.findall(r"move (\d+) from (\d+) to (\d+)", input):
     moves.append([int(nb), int(src)-1, int(dst)-1])
-print(moves)
+# print(moves)
 
+for (nb, src, dst) in moves:
+    for i in range(nb):
+        if len(stacks[src]) > 0:
+            stacks[dst].append(stacks[src].pop())
+print(stacks)
+m = ""
+for s in stacks:
+    if len(s):
+        m += s[-1]
+print(m)
