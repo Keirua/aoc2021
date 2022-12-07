@@ -45,15 +45,35 @@ SIZES = {}
 def compute_sizes(tree):
     if id(tree) in SIZES:
         return SIZES[id(tree)]
-    dirsize = sum([f for f in tree["files"].values()]) + sum([compute_sizes(d) for d in tree["dirs"].values()])
+    print(tree["files"].values())
+    filesize = sum([f for f in tree["files"].values()])
+    subdirsize = sum([compute_sizes(d) for d in tree["dirs"].values()])
+    dirsize = filesize + subdirsize
     SIZES[id(tree)] = dirsize
     return dirsize
 
 
 compute_sizes(tree)
-tot = sum([k for k in SIZES.values() if k < 100000])
 
+part1 = sum([k for k in SIZES.values() if k < 100000])
 print(SIZES)
-print(tot)
+print(part1)
+
+import pprint as pp
+stk = [tree]
+smallest_size = 70000000000
+smallest_dir = None
+while len(stk) > 0:
+    curr = stk.pop()
+    for d in curr["dirs"].values():
+        curr_d_size = compute_sizes(d)
+        size_after_removal = compute_sizes(tree) - curr_d_size
+        if size_after_removal < 40000000 and curr_d_size < smallest_size:
+            smallest_size = curr_d_size
+            smallest_dir = d
+        stk.append(d)
+
+print(smallest_size)
+
 # pp.pprint(lines)
 # print(history)
