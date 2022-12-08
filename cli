@@ -64,7 +64,8 @@ commit Commit a file from staging area to the local repository.
     def bootstrap(self):
         self.download()
         self.template()
-        self.run()
+        year, day = get_year_day()
+        print(open(aoc.challenge_filename(day, year)).read())
 
     def download(self):
         session_cookie = load_config("settings.ini")
@@ -86,7 +87,7 @@ commit Commit a file from staging area to the local repository.
                 f.write(tpl)
 
 def code_filename(day, year):
-    return f"{year}/d{day}_{year}.py"
+    return f"{year}/d{day}.py"
 
 def download_challenge(year, day, session_cookie):
     """
@@ -111,8 +112,8 @@ def get_template(day, year):
 import re, pprint, itertools as it
 pp = pprint.PrettyPrinter(indent=4)
 
-input = aoc.input_as_string(aoc.challenge_filename({day}, {year}))
-lines = aoc.as_lines(input)
+input = open(f"d{day}.txt").read()
+lines = input.split("\\n")
 
 pp.pprint(lines)
 """

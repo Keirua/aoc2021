@@ -10,7 +10,7 @@ def challenge_filename(day: str, year: str) -> str:
     :param year: year
     :return: the name of a challenge file
     """
-    return f"input/{day}_{year}.txt"
+    return f"{year}/d{day}.txt"
 
 
 def input_as_string(filename: str) -> str:
