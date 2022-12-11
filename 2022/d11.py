@@ -16,14 +16,11 @@ class Monkey:
     @classmethod
     def from_lines(cls, lines):
         m = cls()
-        items = []
-        for s in re.findall("(\d+)", lines[1]):
-            items.append(int(s))
-        m.items = Counter(items)
+        m.items = Counter([int(s) for s in re.findall("(\d+)", lines[1])])
         m.op = re.findall("new = (.*)", lines[2])[0]
-        m.test = int(re.findall("(\d+)", lines[3])[0])
-        m.on_true = int(re.findall("(\d+)", lines[4])[0])
-        m.on_false = int(re.findall("(\d+)", lines[5])[0])
+        m.test = int(lines[3].split()[-1])
+        m.on_true = int(lines[4].split()[-1])
+        m.on_false = int(lines[5].split()[-1])
         return m
 
     def __repr__(self):
