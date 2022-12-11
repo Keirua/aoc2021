@@ -2,7 +2,7 @@ import re, pprint, itertools as it
 pp = pprint.PrettyPrinter(indent=4)
 
 input = open(f"d11.txt").read()
-input = open(f"d11-sample.txt").read()
+# input = open(f"d11-sample.txt").read()
 lines = input.split("\n")
 from collections import deque, Counter
 class Monkey:
@@ -43,12 +43,14 @@ for i in range(0, len(lines), 7):
 #             else:
 #                 monkeys[m.on_false].items.append(n)
 
-for nb_runs in range(1000):
-    if nb_runs % 100 == 0:
-        print(nb_runs)
+from math import prod
+lcm = prod([m.test for m in monkeys])
+
+for nb_runs in range(10000):
     for m in monkeys:
         for old, nb_old in m.items.items():
-            v = eval(m.op) // 3
+            v = eval(m.op) % lcm
+            # v = eval(m.op) // 3
             if v % m.test == 0:
                 monkeys[m.on_true].items[v] += nb_old
             else:
@@ -57,6 +59,5 @@ for nb_runs in range(1000):
         m.items = Counter()
 
 inspects = list(sorted([m.nb_inspect for m in monkeys]))
-pp.pprint(inspects)
 print(inspects[-1]*inspects[-2])
 
