@@ -4,6 +4,7 @@ import copy
 from typing import List, Callable, Optional
 from collections import Counter
 from dataclasses import dataclass
+from functools import partial
 
 
 @dataclass
@@ -17,7 +18,7 @@ class Monkey:
     nb_inspect: int = 0
 
     @classmethod
-    def from_lines(cls: "Monkey", lines) -> "Monkey":
+    def from_lines(cls: "Monkey", lines: List[str]) -> "Monkey":
         operation_code = re.search(r"new = (.*)", lines[2]).group(1)
         return cls(
             items=Counter([int(s) for s in re.findall("(\d+)", lines[1])]),
@@ -43,13 +44,13 @@ def run(monkeys: List[Monkey], part: int, N: int) -> int:
         for m in monkeys:
             for old, nb_old in m.items.items():
                 if part == 2:
-                    v = m.op(old) % lcm
+                    new = m.op(old) % lcm
                 else:
-                    v = m.op(old) // 3
-                if v % m.test == 0:
-                    monkeys[m.on_true].items[v] += nb_old
+                    new = m.op(old) // 3
+                if new % m.test == 0:
+                    monkeys[m.on_true].items[new] += nb_old
                 else:
-                    monkeys[m.on_false].items[v] += nb_old
+                    monkeys[m.on_false].items[new] += nb_old
                 m.nb_inspect += nb_old
             m.items = Counter()
 
@@ -57,10 +58,14 @@ def run(monkeys: List[Monkey], part: int, N: int) -> int:
     return inspects[-1] * inspects[-2]
 
 
+part1 = partial(run, part=1, N=20)
+part2 = partial(run, part=2, N=10000)
+
 test_input = open(f"d11-sample.txt").read()
 test_monkeys = parse(test_input.split("\n\n"))
 test_monkeys2 = copy.deepcopy(test_monkeys)
 assert (run(test_monkeys, 1, 20) == 10605)
+assert (part1(parse(test_input.split("\n\n"))) == 10605)
 assert (run(test_monkeys2, 2, 10000) == 2713310158)
 
 input = open(f"d11.txt").read()
