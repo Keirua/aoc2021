@@ -25,7 +25,7 @@ class Tail:
 
 
 def part(moves: List[Tuple[str, int]], tails: List[Tail]) -> int:
-    head: List[Tuple[int, int]] = [(0, 0)]
+    xh, yh = 0, 0
     mapping = {
         "R": (1, 0),
         "L": (-1, 0),
@@ -35,14 +35,15 @@ def part(moves: List[Tuple[str, int]], tails: List[Tail]) -> int:
     for dir, dist in moves:
         dx, dy = mapping[dir]
         for i in range(dist):
-            xh, yh = head[-1]
+            # First we update the head
             xh, yh = xh + dx, yh + dy
-            head.append((xh, yh))
-            prev = head[-1]
+            prev = xh, yh
+            # Then we make all the tails follow the previous element
             for r in range(len(tails)):
                 tails[r].follow(prev)
                 prev = tails[r].history[-1]
 
+    # count of all the distinct positions of the last tail
     return len(set(tails[-1].history))
 
 
