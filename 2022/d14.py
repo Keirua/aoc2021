@@ -45,13 +45,14 @@ class Grid:
 
 
     def plot(self, x, y, c):
-        if 0 <= y < self.H and 0 <= x < self.W:
-        # self.grid[y - self.min_y][x - self.min_x] = c
+        if self.is_in_grid(x, y):
             self.grid[y][x] = c
 
+    def is_in_grid(self, x:int, y:int) -> bool:
+        return 0 <= y < self.H and 0 <= x < self.W
+
     def get(self, x, y):
-        if 0 <= y < self.H and 0 <= x < self.W:
-        # return self.grid[y - self.min_y][x - self.min_x]
+        if self.is_in_grid(x, y):
             return self.grid[y][x]
         return "."
 
@@ -61,30 +62,31 @@ class Grid:
         for l in self.grid:
             out += "".join(l) + "\n"
         return out
+
 class Point:
     def __init__(self, x=0, y=0):
         self.x = x
         self.y = y
-START_SNOWFLAKE = (500, 500)
-class Automaton:
+
+class SnowflakeAutomaton:
     def __init__(self, grid):
-        self.g:Grid = grid
+        self.g: Grid = grid
         self.curr_snowflake = Point(500, 0)
         self.nb_step = 0
         self.nb_sand = 0
-    def run(self):
-        for i in range(100000):
-            if self.drop_snowflake():
-                break
 
-    def drop_snowflake(self):
+    def run(self, part=1):
+        while not self.drop_snowflake(part):
+            pass
+
+    def drop_snowflake(self, part=1):
         curr = Point(500, 0)
         self.nb_sand += 1
         while True:
+            if part == 2 and self.g.get(500, 0) == "#":
+                return True
             self.nb_step += 1
             ny = curr.y + 1
-            print(curr.x, curr.y)
-            # The next 3 pixels
             if self.g.get(curr.x, ny) == "#" and self.g.get(curr.x-1, ny) == "#" and self.g.get(curr.x+1, ny) == "#":
                 self.g.plot(curr.x, curr.y, "#")
                 return False  # We managed to drop a snowflake
@@ -93,44 +95,27 @@ class Automaton:
             if self.g.get(curr.x, ny) == "#" and self.g.get(curr.x-1, ny) == "#" and self.g.get(curr.x+1, ny) == ".":
                 curr.x += 1
             curr.y = ny
-            if curr.y > self.g.max_y:
-                print("done")
+            # are we done?
+            if part == 1 and curr.y > self.g.max_y:
                 return True
 
-            # # The pixel below is a snowflake
-            # if self.g.get(curr.x, ny) == "#":
-            #     # If there is no snowflake on the diagonal left, we had it
-            #     if self.g.get(curr.x-1, ny) != "#":
-            #         self.g.plot(curr.x-1, ny, "#")
-            #         return False  # We managed to drop a snowflake
-            #     # If there is a snowflake on the diagonal left, but not on the right, we had it
-            #     if self.g.get(curr.x-1, ny) == "#" and self.g.get(curr.x+1, ny) != "#":
-            #         self.g.plot(curr.x+1, ny, "#")
-            #         return False  # We managed to drop a snowflake
-            #     # There already are snowflakes on left and right
-            #     if self.g.get(curr.x - 1, ny) == "#" and self.g.get(curr.x + 1, ny) == "#":
-            #         # If we didn’t plot curr already:
-            #         if self.g.get(curr.x, curr.y) != "#":
-            #             self.g.plot(curr.x, curr.y, "#")
-            #             return False  # We managed to drop a snowflake
-            #         else:
-            #             if self.g.get(curr.x - 1, curr.y) != "#":
-            #                 curr.x -= 1
-            #             elif self.g.get(curr.x + 1, curr.y) != "#":
-            #                 curr.x += 1
-            #             else:
-            #                 return False
+if __name__ == "__main__":
+    lines = parse(d14)
+    # lines = parse(d14_samples)
+    # pp.pprint(lines)
+    grid = Grid(lines)
+    automaton = SnowflakeAutomaton(grid)
+    automaton.run(part=1)
+    # print(grid)
+    print(automaton.nb_sand-1)
 
+    # Part 2. Cheating a bit, it assumes there won’t be negative Xs
+    lines.append(
+        [(0, 2+grid.max_y), (1000, 2+grid.max_y)]
+    )
+    grid2 = Grid(lines)
+    automaton2 = SnowflakeAutomaton(grid2)
+    automaton2.run(part=2)
+    # print(grid2)
+    print(automaton2.nb_sand-1)
 
-
-lines = parse(d14)
-# lines = parse(d14_samples)
-pp.pprint(lines)
-
-grid = Grid(lines)
-automaton = Automaton(grid)
-automaton.run()
-print(grid)
-print(automaton.nb_sand-1)
-# grid.plot(500,0,"T")
-# print(grid)

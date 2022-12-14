@@ -1,3 +1,7 @@
+# Day 6
+
+Interestingly, it can be solved in O(n) with a bit trick: https://www.mattkeeter.com/blog/2022-12-10-xor/
+
 # day 9
 
 Parsing
