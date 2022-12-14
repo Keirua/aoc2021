@@ -34,18 +34,20 @@ class CustomGrid(Grid):
         return f"{super().__str__()}\n{self.s} -> {self.e}"
 
 import heapq
-def dijkstra(grid, start=(0, 0), end=None):
-    """Dijkstra's algorithm implementation using a priority queue"""
+def dijkstra(grid, starts, end):
+    """Dijkstra's algorithm implementation using a priority queue, for multiple starting nodes"""
     # Initial state:
     #  - all the distances to the starting node are maximal
     #    (except the starting node: it has a distance of 0 to itself).
     #  - all the ancestors are non-existing
     dist = { v: 1000000000000000 for v in grid.all_coords()}
-    dist[start] = 0
+    # The queue of nodes we will consider. All the starting nodes have a distance 0
+    Q = []
+    for s in starts:
+        dist[s] = 0
+        heapq.heappush(Q, (0, s))
     prev = {v: None for v in grid.all_coords()}
 
-    # The queue of nodes we will consider, with
-    Q = [(0, start)]
     while len(Q) > 0:
         # We consider the "cheapest" node, that is the node with the lowest cost.
         # We store the tuples (cost, position). In this context, heapq.heappop compares on the cost
@@ -103,21 +105,16 @@ def build_debug_itinerary(g, history) -> Grid:
 
 if __name__ == "__main__":
     input = open(f"d12-sample.txt").read()
-    # input = open(f"d12.txt").read()
+    input = open(f"d12.txt").read()
     g = CustomGrid.from_input(input)
     print(g)
-    distances, prev = dijkstra(g, g.s)
+    distances, prev = dijkstra(g, [g.s], g.e)
     history = build_itinerary(prev, g.s, g.e)
     # print(len(history))
-    ngrid = build_debug_itinerary(g, history)
-    print(ngrid)
+    # ngrid = build_debug_itinerary(g, history)
+    # print(ngrid)
     print(f"part1: {distances[g.e]}")
-    # print(len(g.all_As))
 
     # part2
-    a_distance = []
-    for a in g.all_As:
-        dist, prev = dijkstra(g, a, g.e)
-        if g.e in dist:
-            a_distance.append(dist[g.e])
-    print(f"part2: {min(a_distance)}")
+    dist, prev = dijkstra(g, g.all_As, g.e)
+    print(f"part2: {dist[g.e]}")
