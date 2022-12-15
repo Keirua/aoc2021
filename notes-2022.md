@@ -78,3 +78,54 @@ sorted_packets = sorted(packets, key=functools.cmp_to_key(cmp))
 p2 = (sorted_packets.index([[2]])+1) * (sorted_packets.index([[6]])+1)
 print(p2)
 ```
+
+# Day 14:
+
+Fun automaton, many nice visualizations on reddit.
+
+# Day 15:
+
+From part2 it was pretty clear that a bruteforce solution wouldn’t work fast, or fast enough with what I had.
+It was pretty cool (though overkill probably ;)) to use z3 to solve part 2
+
+```python
+def part2(positions, xy_max):
+    solver = Solver()
+    tx, ty, p2 = Ints("x y p2")
+    solver.add(And(tx >= 0, tx <= xy_max))
+    solver.add(And(ty >= 0, ty <= xy_max))
+    solver.add(p2 == tx*4000000+ty)
+    for (x, y, x2, y2) in positions:
+        dist = manhattan_distance(x, y, x2, y2)
+        solver.add(z3Abs(x-tx)+z3Abs(y - ty) > dist)
+    solver.check()
+    m = solver.model()
+    return m[p2]
+```
+
+I later found out (https://www.youtube.com/watch?v=OG1QwJ2RKsU) an elegant algo to merge the intervals for part 1. It
+reduces the memory footprint and it’s much faster than using set operations.
+
+```python
+# Say we have the following intervals, a list of [a,b)
+intervals = [[9,10],[9,15],[10,12],[-1,0], [9,10],[2,4],[2,3],[1,3],[6,8]]
+
+def merge_intervals(intervals):
+    intervals.sort()
+    stack = [intervals[0]]
+    for lo, hi in intervals[1:]:
+        qlo, qhi = stack[-1]
+        # We can play with <= and <= 1+ in order to change how we represent those ranges,
+        # depending on if the upper value is included or not
+        if lo <= qhi:
+            # The new interval overlaps the largest, latest range, so we update the max
+            stack[-1][1] = max(hi, qhi)
+        else:
+            stack.append([lo, hi])
+    return stack
+
+# output:
+# [[-1, 0], [1, 4], [6, 8], [9, 15]]
+stack = merge(intervals)
+print(stack)
+```
