@@ -44,25 +44,6 @@ def simplify(valves):
 
 PRESSURE_AT = {0: 0}
 
-
-# @lru_cache(maxsize=None)
-def part1(curr_valve: str, remaining_time: int = 30, pressure: int = 0, open_bitmask: int = 0) -> int:
-    if remaining_time == 0:
-        return pressure
-    else:
-        values = [pressure] # If we can open nothing new we may return the current pressure
-        # if the current valve is not open, we can open it
-        # We only do so if it adds some water
-        if valves[curr_valve].flow_rate > 0 and not mapping[curr_valve] & open_bitmask:
-            bitmask = mapping[curr_valve] | open_bitmask
-            PRESSURE_AT[bitmask] = PRESSURE_AT[open_bitmask] + valves[curr_valve].flow_rate
-            # the new pressure will take effect next time
-            values.append(part1(curr_valve, remaining_time - 1, pressure + PRESSURE_AT[open_bitmask], bitmask))
-        # We can take one step to reach another valve
-        for v, d in valves[curr_valve].targets.items():
-            values.append(part1(v, remaining_time - d, pressure + PRESSURE_AT[open_bitmask], open_bitmask))
-        return max(values)
-
 import heapq
 def dijkstra(valves, start=(0, 0)):
     """Dijkstra's algorithm implementation using a priority queue"""
@@ -84,22 +65,46 @@ def dijkstra(valves, start=(0, 0)):
                 heapq.heappush(Q, (new_distance, neighbour))
     return dist, prev
 
+@lru_cache(maxsize=None)
+def part1(curr_valve: str, remaining_time: int = 30, pressure: int = 0, open_bitmask: int = 0) -> int:
+    global useful_valves, mapping, distances
+    if remaining_time == 0:
+        return pressure
+    else:
+        # If we can open nothing new we may return the current pressure
+        values = [pressure]
+        # if the current valve is not open, we can open it
+        # We only do so if it adds some water
+        if valves[curr_valve].flow_rate > 0:
+            if not mapping[curr_valve] & open_bitmask:
+                bitmask = mapping[curr_valve] | open_bitmask
+                PRESSURE_AT[bitmask] = PRESSURE_AT[open_bitmask] + valves[curr_valve].flow_rate
+                # the new pressure will take effect next time
+                values.append(part1(curr_valve, remaining_time - 1, pressure + PRESSURE_AT[open_bitmask], bitmask))
+
+        # We can take one step to reach another valve
+        for v in valves[curr_valve].targets.keys():
+            if v not in useful_valves:
+                continue
+            dist = distances[curr_valve][v]
+            if remaining_time - dist > 0:
+                values.append(part1(v, remaining_time - dist, pressure + dist*PRESSURE_AT[open_bitmask], open_bitmask))
+        return max(values)
+
 
 text = open(f"d16-sample.txt").read().strip()
 # text = open(f"d16.txt").read().strip()
 valves = parse(text)
-# We need to simplify the graph so that we don’t move to useless locations
-useful_valves = set([v.name for v in valves.values() if v.flow_rate > 0] + ["AA"])
-
-new_graph = {}
-for v in useful_valves:
-    new_graph[v], _ = dijkstra(valves, v)
-import pprint as pp
-pp.pprint(new_graph)
-# simplify(valves, useful_valves)
-# valves = simplify(valves)
-#
-# curr_valve = "AA"
-# print(valves)
+# We need to simplify the graph so that we don’t move to useless locations,
+# so we’ll only take care of the valves with a flow_rate > 0
+useful_valves = {v.name for v in valves.values() if v.flow_rate > 0}
+print(useful_valves)
+# Now we can compute the distances between the interesting nodes (those that we can open)
+# We include the starting node
+# distances = {}
+# for v in useful_valves | {"AA"}:
+#     dist, _ = dijkstra(valves, v)
+#     distances[v] = {name: length for name, length in dist.items() if name in useful_valves and name != v}
+# pp.pprint(distances)
 # mapping = extract_name_mapping(valves)
 # print(part1("AA", 30, 0, 0))

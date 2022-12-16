@@ -168,3 +168,14 @@ def merge_intervals(intervals):
 stack = merge(intervals)
 print(stack)
 ```
+
+## Day 16
+
+bitfield -> hash the combination names
+dynamic programming
+Graph simplification? -> https://en.wikipedia.org/wiki/Floyd%E2%80%93Warshall_algorithm
+DFS ?
+
+MIP: Mixed Integer programming
+https://www.reddit.com/r/adventofcode/comments/zn6k1l/comment/j0g8ejd/?utm_source=reddit&utm_medium=web2x&context=3
+https://www.youtube.com/watch?v=A4mmmDAdusQ
