@@ -83,17 +83,15 @@ def part1(curr_valve: str, remaining_time: int = 30, pressure: int = 0, open_bit
                 values.append(part1(curr_valve, remaining_time - 1, pressure + PRESSURE_AT[open_bitmask], bitmask))
 
         # We can take one step to reach another valve
-        for v in valves[curr_valve].targets.keys():
-            if v not in useful_valves:
-                continue
+        for v in useful_valves - {curr_valve}:
             dist = distances[curr_valve][v]
-            if remaining_time - dist > 0:
+            if remaining_time - dist >= 0:
                 values.append(part1(v, remaining_time - dist, pressure + dist*PRESSURE_AT[open_bitmask], open_bitmask))
         return max(values)
 
 
 text = open(f"d16-sample.txt").read().strip()
-# text = open(f"d16.txt").read().strip()
+text = open(f"d16.txt").read().strip()
 valves = parse(text)
 # pp.pprint(valves)
 # We need to simplify the graph so that we don’t move to useless locations,
@@ -122,7 +120,7 @@ def dump_simplified(valves, useful_valves):
         for t in useful_valves - {v}:
             print(f'\t"{v} - {valve.flow_rate}" -> "{t} - {valves[t].flow_rate}" [label="{distances[v][t]}"]')
     print("}")
-dump_simplified(valves, useful_valves)
+# dump_simplified(valves, useful_valves)
 # dump(valves)
-# mapping = extract_name_mapping(valves)
-# print(part1("AA", 30, 0, 0))
+mapping = extract_name_mapping(valves)
+print(part1("AA", 30, 0, 0))
