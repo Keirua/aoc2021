@@ -95,16 +95,34 @@ def part1(curr_valve: str, remaining_time: int = 30, pressure: int = 0, open_bit
 text = open(f"d16-sample.txt").read().strip()
 # text = open(f"d16.txt").read().strip()
 valves = parse(text)
+# pp.pprint(valves)
 # We need to simplify the graph so that we don’t move to useless locations,
 # so we’ll only take care of the valves with a flow_rate > 0
-useful_valves = {v.name for v in valves.values() if v.flow_rate > 0}
-print(useful_valves)
+useful_valves = {k for k, v in valves.items() if v.flow_rate > 0}
+# print(useful_valves)
 # Now we can compute the distances between the interesting nodes (those that we can open)
 # We include the starting node
-# distances = {}
-# for v in useful_valves | {"AA"}:
-#     dist, _ = dijkstra(valves, v)
-#     distances[v] = {name: length for name, length in dist.items() if name in useful_valves and name != v}
+distances = {}
+for v in useful_valves | {"AA"}:
+    dist, _ = dijkstra(valves, v)
+    distances[v] = {name: length for name, length in dist.items() if name in useful_valves and name != v}
 # pp.pprint(distances)
+def dump(valves):
+    print("digraph some_graph {\n node [shape=box];\n")
+    for v in valves.keys():
+        valve = valves[v]
+        for t in valves[v].targets:
+            print(f"\t\"{valve.name} - {valve.flow_rate}\" -> \"{t} - {valves[t].flow_rate}\"")
+    print("}")
+
+def dump_simplified(valves, useful_valves):
+    print("digraph some_graph {\n node [shape=box];\n")
+    for v in useful_valves | {"AA"}:
+        valve = valves[v]
+        for t in useful_valves - {v}:
+            print(f'\t"{v} - {valve.flow_rate}" -> "{t} - {valves[t].flow_rate}" [label="{distances[v][t]}"]')
+    print("}")
+dump_simplified(valves, useful_valves)
+# dump(valves)
 # mapping = extract_name_mapping(valves)
 # print(part1("AA", 30, 0, 0))
