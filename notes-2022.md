@@ -1,12 +1,42 @@
 # Day 6
 
-Interestingly, it can be solved in O(n) with a bit trick: https://www.mattkeeter.com/blog/2022-12-10-xor/
+The naive solution is O(n*window_size), but interestingly, it can be solved in O(n) with [a bit trick](https://www.mattkeeter.com/blog/2022-12-10-xor/)
+
+Totally unnecessary since n = 4096 and window_size is {4, 14}, but clever anyway.
+
+```python
+# First, we convert our naive solution using sets into binary ORs:
+def solve_or(input:str, N:int) -> int:
+    for i in range(len(input)-N):
+        s = 0
+        for j in range(N):
+            # ord(input[i + j]) - ord('a') => turn input letters a-z into 0-26
+            # 1 << (ord(input[i + j]) - ord('a')) = 2 ** (letter position)
+            # s |= b0001 -> sets bit 0001 in s
+            s |= 1 << (ord(input[i + j]) - ord('a'))
+        if bin(s).count("1") == N: # there was no native popcnt in python until 3.10
+            return i + N
+
+# but we want to remove the N loop. We use the fact that a ^ b ^ a == b
+def solve(input:str, N:int) -> int:
+    s = 0
+    for i in range(len(input)):
+        # Turn on bits as they enter the window
+        s ^= 1 << (ord(input[i]) - ord('a'))
+        if i >= N:
+            # Turn bits off as we leave the window
+            s ^= 1 << (ord(input[i - N]) - ord('a'))
+        if s.bit_count() == N:
+            return i + 1
+```
+
+Led to some interesting reading: https://stackoverflow.com/questions/109023/count-the-number-of-set-bits-in-a-32-bit-integer#109025
 
 # day 9
 
-Parsing
+I love the pattern of using regexes and one-liners for parsing:
+
 ```python
-# Love this pattern
 moves = [(dir, int(dist)) for (dir, dist) in re.findall(r"([RDLU]) (\d+)", input)]
 ```
 # day 11:
@@ -29,6 +59,8 @@ return cls(
 
 # day 12: dijkstra
 
+Dijkstra with an heapq for faster search, then dijkstra with multiple starting point.
+
 ```python
 import heapq
 def dijkstra(grid, start=(0, 0), end=None):
@@ -41,7 +73,7 @@ def dijkstra(grid, start=(0, 0), end=None):
     dist[start] = 0
     prev = {v: None for v in grid.all_coords()}
 
-    # The queue of nodes we will consider, with
+    # The queue of nodes we will consider, with one starting point:
     Q = [(0, start)]
     while len(Q) > 0:
         # We consider the "cheapest" node, that is the node with the lowest cost.
@@ -70,14 +102,21 @@ def dijkstra(grid, start=(0, 0), end=None):
 
 # day 13: sorting according to a custom function
 
+I cheated and parsed with `eval`. My comparison function cannot be used in `sorted` directly:
+
 ```python
 def cmp(a, b):
-# do something, return -1, 0 or 1
+    # do something
+    return -1, 0 or 1
 
 sorted_packets = sorted(packets, key=functools.cmp_to_key(cmp))
 p2 = (sorted_packets.index([[2]])+1) * (sorted_packets.index([[6]])+1)
 print(p2)
 ```
+
+[mjpieters](https://github.com/mjpieters/adventofcode/blob/master/2022/Day%2013.ipynb) is way more idiomatic:
+ - he made a custom parser, kudos to him
+ - he implemented `__lt__` in order to use `sort` natively
 
 # Day 14:
 
