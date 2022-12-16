@@ -45,7 +45,7 @@ def simplify(valves):
 PRESSURE_AT = {0: 0}
 
 
-@lru_cache(maxsize=None)
+# @lru_cache(maxsize=None)
 def part1(curr_valve: str, remaining_time: int = 30, pressure: int = 0, open_bitmask: int = 0) -> int:
     if remaining_time == 0:
         return pressure
@@ -63,13 +63,43 @@ def part1(curr_valve: str, remaining_time: int = 30, pressure: int = 0, open_bit
             values.append(part1(v, remaining_time - d, pressure + PRESSURE_AT[open_bitmask], open_bitmask))
         return max(values)
 
+import heapq
+def dijkstra(valves, start=(0, 0)):
+    """Dijkstra's algorithm implementation using a priority queue"""
+    dist = { v: 1000000000000000 for v in valves.keys()}
+    dist[start] = 0
+    prev = {v: None for v in valves.keys()}
+
+    # The queue of nodes we will consider, with one starting point:
+    Q = [(0, start)]
+    while len(Q) > 0:
+        min_dist, min_coord = heapq.heappop(Q)
+        if min_dist > dist[min_coord]:
+            continue
+        for neighbour in valves[min_coord].targets:
+            new_distance = min_dist + 1
+            if new_distance < dist[neighbour]:
+                dist[neighbour] = new_distance
+                prev[neighbour] = min_coord
+                heapq.heappush(Q, (new_distance, neighbour))
+    return dist, prev
+
 
 text = open(f"d16-sample.txt").read().strip()
 # text = open(f"d16.txt").read().strip()
 valves = parse(text)
-valves = simplify(valves)
+# We need to simplify the graph so that we don’t move to useless locations
+useful_valves = set([v.name for v in valves.values() if v.flow_rate > 0] + ["AA"])
 
-curr_valve = "AA"
-print(valves)
-mapping = extract_name_mapping(valves)
-print(part1("AA", 30, 0, 0))
+new_graph = {}
+for v in useful_valves:
+    new_graph[v], _ = dijkstra(valves, v)
+import pprint as pp
+pp.pprint(new_graph)
+# simplify(valves, useful_valves)
+# valves = simplify(valves)
+#
+# curr_valve = "AA"
+# print(valves)
+# mapping = extract_name_mapping(valves)
+# print(part1("AA", 30, 0, 0))
