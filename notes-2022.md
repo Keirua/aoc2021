@@ -179,3 +179,15 @@ DFS ?
 MIP: Mixed Integer programming
 https://www.reddit.com/r/adventofcode/comments/zn6k1l/comment/j0g8ejd/?utm_source=reddit&utm_medium=web2x&context=3
 https://www.youtube.com/watch?v=A4mmmDAdusQ
+
+## Day 18
+
+ -> floodfill for part 2
+Extracted the bounding box, then made a floodfill to find the outer shell. From that, I could deduce the inner shell
+I tried adding my custom set using integer bit operations, but this was (a bit surprisingly) slower
+
+ -> jonathan paulson did this in reverse:
+    - he made a floodfill
+    - if the floodfill lasted forever, he’d conclude the point is on the outside
+    - then he used memoization to give a x100 speed boost
+ 

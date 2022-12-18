@@ -9,6 +9,20 @@ def parse(text):
 
 deltas = [(-1,0,0), (1,0,0), (0,-1,0), (0,1,0), (0,0,-1), (0, 0, 1)]
 
+class MiniSet():
+    def __init__(self):
+        self.content = 0
+
+    def add(self, v):
+        global deltas
+        try:
+            index = deltas.index(v)
+            self.content |= 1<<index
+        except:
+            pass
+    def __len__(self):
+        return self.content.bit_count() # Number of ones in the binary representation of the absolute value
+
 text = open(f"d18.txt").read().rstrip()
 text_sample = open(f"d18-sample.txt").read().rstrip()
 coords = parse(text)
@@ -45,7 +59,8 @@ def extract_bbox(coords):
 def flood_fill_3d(coords, deltas):
     """
     part 2 = we remove the connections from the points inside the shape
-    by floodfilling for a point inside the bounding box
+    We find the outer points by floodfilling for a point inside the bounding box
+    then we can create the connections with the rest of the coords
     """
     minx, miny, minz, maxx, maxy, maxz = extract_bbox(coords)
     Q = [(minx, miny, minz)]
@@ -76,6 +91,7 @@ def flood_fill_3d(coords, deltas):
     return surfaces
 
 # coords = coords_sample
+# connections = {c: MiniSet() for c in coords}
 connections = {c: set() for c in coords}
 part1(coords, deltas)
 print(extract_bbox(coords))
