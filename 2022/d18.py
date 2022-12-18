@@ -18,7 +18,6 @@ text_unit = """1,1,1
 coords_unit = parse(text_unit)
 
 def part1(coords, deltas):
-    connections = {c: set() for c in coords}
     for i in range(len(coords)):
         for j in range(i+1, len(coords)):
             x, y, z = coords[i]
@@ -32,9 +31,59 @@ def part1(coords, deltas):
     surfaces = sum(len(deltas) - len(connections[c]) for c in coords)
     return surfaces
 
-print(part1(coords_sample, deltas))
-print(part1(coords_unit, deltas))
-print(part1(coords, deltas))
+def extract_bbox(coords):
+    """extract the bounding box of the list on vertices"""
+    minx, miny, minz = coords[0]
+    maxx, maxy, maxz = coords[0]
+    for i in range(1, len(coords)):
+        x, y, z = coords[i]
+        minx, miny, minz = min(minx, x), min(miny, y), min(minz, z)
+        maxx, maxy, maxz = max(maxx, x), max(maxy, y), max(maxz, z)
+    # Taking a bit of margin here
+    return minx-1, miny-1, minz-1, maxx+1, maxy+1, maxz+1
+
+def flood_fill_3d(coords, deltas):
+    """
+    part 2 = we remove the connections from the points inside the shape
+    by floodfilling for a point inside the bounding box
+    """
+    minx, miny, minz, maxx, maxy, maxz = extract_bbox(coords)
+    Q = [(minx, miny, minz)]
+    SEEN = []
+    outer_shell = []
+    while(len(Q)) > 0:
+        x, y, z = Q.pop()
+        for dx, dy, dz in deltas:
+            nx, ny, nz = x+dx, y+dy, z+dz
+            if minx <= nx <= maxx and miny <= ny <= maxy and minz <= nz <= maxz:
+                if (nx, ny, nz) not in SEEN:
+                    if (nx, ny, nz) not in coords:
+                        Q.append((nx, ny, nz))
+                        outer_shell.append((nx, ny, nz))
+
+                    SEEN.append((nx, ny, nz))
+    # Now we have a list of all the cells on the outer shell, we can then deduce the coords on the inner shell
+    for x in range(minx, maxx+1):
+        for y in range(miny, maxy+1):
+            for z in range(minz, maxz+1):
+                if (x, y, z) not in outer_shell and (x, y, z) not in coords:
+                    # then (x, y, z) is inside the shell
+                    for (x2, y2, z2) in coords:
+                        dx, dy, dz = x-x2, y-y2, z-z2
+                        if (dx, dy, dz) in deltas:
+                            connections[(x2, y2, z2)].add((dx, dy, dz))
+    surfaces = sum(len(deltas) - len(connections[c]) for c in coords)
+    return surfaces
+
+# coords = coords_sample
+connections = {c: set() for c in coords}
+part1(coords, deltas)
+print(extract_bbox(coords))
+print(flood_fill_3d(coords, deltas))
+
+# print(part1(coords_sample, deltas))
+# print(part1(coords_unit, deltas))
+# print(part1(coords, deltas))
 # prir
 # print(surfaces) # 10694 is too high
 # pp.pprint(coords)
