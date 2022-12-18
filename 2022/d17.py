@@ -1,6 +1,7 @@
 import pprint as pp
 
 operations = open(f"d17.txt").read().strip()
+operations = open(f"d17-sample.txt").read().strip()
 
 flat_h = ["####"]
 cross = [".#.", "###", ".#."]
@@ -28,7 +29,7 @@ def draw(board, current_shape_info):
     for y in range(len(curr_shape)):
         for x in range(len(curr_shape[0])):
             bx, by = x + current_shape_info.x, y + current_shape_info.y
-            print(y, by, len(board))
+            # print(y, by, len(board))
             if curr_shape[y][x] == "#" and board[by][bx] == ".":
                 board[by][bx] = curr_shape[y][x]
 
@@ -42,8 +43,7 @@ def undraw(board, current_shape_info):
                 board[by][bx] = "."
 
 
-def debug(board, current_shape_info, i):
-    print(f"move {i}")
+def debug(board, current_shape_info):
     draw(board, current_shape_info)
     for revy, l in enumerate(board[::-1]):
         l2 = l.copy()
@@ -69,8 +69,9 @@ def can_move(board, curr_shape_info, xy):
     return True
 
 
-def apply_jet(board, curr_shape_info, i):
-    if operations[i % len(operations)] == "<":
+def apply_jet(board, curr_shape_info, ninstr):
+    op = operations[ninstr % len(operations)]
+    if op == "<":
         nx = curr_shape_info.x - 1
     else:
         nx = curr_shape_info.x + 1
@@ -85,29 +86,52 @@ def fall_down(board, curr_shape_info) -> bool:
         return True
     return False
 
-def find_highest_rock(board):
-    for y in range(len(board)-1, 0, -1):
+def find_highest_rock(board, ny):
+    # We know the piece is at worst in ny
+    for y in range(len(board)-1, ny, -1):
         for c in board[y]:
             if c == "#":
                 return y
+    raise Exception("should not happen, we know that there is somethin in ny")
 
-for i in range(10):
-    if i % 2 == 0:
-        apply_jet(board, curr_shape_info, i)
-        debug(board, curr_shape_info, i)
+from enum import Enum
+
+class RockState(Enum):
+    Jet = 0
+    Fall = 1
+
+
+nb_rocks = 1
+next_rock_action = RockState.Jet
+nb_instruction = 0
+while nb_rocks < 2022:
+    if next_rock_action == RockState.Jet:
+        apply_jet(board, curr_shape_info, nb_instruction)
+        nb_instruction = (nb_instruction + 1) % len(operations)
+        next_rock_action = RockState.Fall
     else:
-        if not fall_down(board, curr_shape_info):
-            debug(board, curr_shape_info, i)
-            # Now we had the shape to the board
+        ny = curr_shape_info.y - 1
+        if ny >= 0 and can_move(board, curr_shape_info, (curr_shape_info.x, ny)):
+            curr_shape_info.y = ny
+        else:
+            # debug(board, curr_shape_info)
+            # The piece cannot fall anymore, it stays in position
             draw(board, curr_shape_info)
+            nb_rocks += 1
+            if nb_rocks == 2022:
+                break
             # Then we reset the shape info and move to the next shape
             curr_shape_info.index = (curr_shape_info.index + 1) % len(shapes)
             curr_shape_info.x = 2
             # We need to find the highest location, because we may need to increase the size of the drawing board
-            max_y = find_highest_rock(board)
+            max_y = find_highest_rock(board, ny)
             curr_shape_info.y = max_y + 3
-            if len(board) <= max_y + 4 + 2:
-                while(len(board)) <= max_y + 4 + 2:
+            if len(board) <= max_y + 4 + 4:
+                while(len(board)) <= max_y + 4 + 4:
                     board.append(list("......."))
             curr_shape_info.y = max_y + 3
-            # print(board)
+        next_rock_action = RockState.Jet
+
+draw(board, curr_shape_info)
+print(nb_rocks)
+# print(find_highest_rock(board, 0))
