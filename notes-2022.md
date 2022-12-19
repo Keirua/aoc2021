@@ -200,7 +200,7 @@ I tried adding my custom set using integer bit operations, but this was (a bit s
  
 ## Day 19
 
-BFS + memoization + search tree pruning for me (30s for both parts!…)
+BFS + memoization + search tree pruning for me + multiprocessing (18s for both parts!…)
 
 Branch-and-bound best-first search over the choices of which robot to build seems much better
 https://www.reddit.com/r/adventofcode/comments/zpihwi/comment/j0vvzgz/?utm_source=share&utm_medium=web2x&context=3

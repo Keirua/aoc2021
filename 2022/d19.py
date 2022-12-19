@@ -89,12 +89,42 @@ def solve(o: int, c: int, ob_ore: int, ob_clay: int, g_ore: int, g_obsidian: int
 text = open(f"d19.txt").read().strip()
 
 blueprints = parse(text)
-part1 = 0
-part2 = 1
-for idx, o, c, ob_ore, ob_clay, g_ore, g_obsidian in blueprints:
-    nb_geodes = solve(o, c, ob_ore, ob_clay, g_ore, g_obsidian, 24)
-    part1 += idx * nb_geodes
-    # if idx <= 3:
-    #     part2 *= solve(o, c, ob_ore, ob_clay, g_ore, g_obsidian, 32)
-print(part1)
-print(part2)
+from multiprocessing import Process, Queue
+def solve_mp(queue, blueprint, t):
+    idx, o, c, ob_ore, ob_clay, g_ore, g_obsidian = blueprint
+    nb_geodes = solve(o, c, ob_ore, ob_clay, g_ore, g_obsidian, t)
+    queue.put((idx, nb_geodes))
+
+def p1_mp(blueprints):
+    queue = Queue()
+    procs = []
+    for line in blueprints:
+        proc = Process(target=solve_mp, args=(queue, line, 24))
+        proc.start()
+        procs.append((proc, queue))
+    total = 0
+    for p, q in procs:
+        p.join()  # this blocks until the process terminates
+        idx, nb_geodes = q.get()
+        total += idx*nb_geodes
+    return total
+
+def p2_mp(blueprints):
+    queue = Queue()
+    procs = []
+    for line in blueprints[:3]:
+        proc = Process(target=solve_mp, args=(queue, line, 32))
+        proc.start()
+        procs.append((proc, queue))
+    total = 1
+    for p, q in procs:
+        p.join()  # this blocks until the process terminates
+        idx, nb_geodes = q.get()
+        total *= nb_geodes
+    return total
+
+
+if __name__ == '__main__':
+    print(p1_mp(blueprints))
+    print(p2_mp(blueprints))
+
