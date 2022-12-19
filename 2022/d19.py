@@ -1,89 +1,65 @@
-import heapq
-import pprint
+import pprint as pp
 import re
-from heapq import heappop, heappush
+from collections import deque
 
-pp = pprint.PrettyPrinter(indent=4)
-
-def parse_costs(a):
-    c, n = a
-    return int(c), n
 
 def parse(text):
-    out = []
-    for blueprint in text.split("\n\n"):
-        # Blueprint 1: Each ore robot costs 4 ore. Each clay robot costs 4 ore. Each obsidian robot costs 4 ore and 14 clay. Each geode robot costs 2 ore and 16 obsidian.
-        for line in blueprint.split("\n"):
-            costs = re.findall("((\d+) (ore|clay|geode|obsidian))+", line)
-            w = line.split(" ")
-            blueprint = {}
-            blueprint[w[3]] = [parse_costs(costs[0][1:])]
-            blueprint[w[9]] = [parse_costs(costs[1][1:])]
-            blueprint[w[15]] = [parse_costs(costs[2][1:]), parse_costs(costs[3][1:])]
-            blueprint[w[24]] = [parse_costs(costs[4][1:]), parse_costs(costs[5][1:])]
-
-            # print(line)
-            # print(costs)
-            # pp.pprint(blueprint)
-            out.append(blueprint)
-    return out
+    # Blueprint 1:
+    #   Each ore robot costs 4 ore.
+    #   Each clay robot costs 4 ore.
+    #   Each obsidian robot costs 4 ore and 14 clay.
+    #   Each geode robot costs 2 ore and 16 obsidian.
+    #
+    # idx, ore_cost, clay_cost, obsidian_cost_in_ore, obsidian_cost_in_clay, geode_cost_in_ore, geode_cost_in_obsidian
+    # idx, o, c, ob_ore, ob_clay, g_ore, g_obsidian
+    return [list(map(int, re.findall("(\d+)", line))) for line in text.split("\n")]
 
 
-def compute_new_ressources(ressources, robots):
-    return {k: robots[k] + ressources[k] for k in range(len(ressources_names))}
-    # return {k: robots[k] + ressources.get(k, 0) for k in ressources_names}
-
-
-def gen_successors(blueprint, ressources, robots):
-    successors = []
-    for ressource_name, costs in blueprint.items():
-        idx = ressources_names.index(ressource_name)
-        # If we have enough ressources to produce said robots, we can build one:
-        if all([ressources[ressources_names.index(name)] > cost for cost, name in costs]):
-            new_ressources = copy(ressources)
-            new_robots = copy(robots)
-            # new_ressources[name] += 1
-            for cost, name in costs:
-                new_ressources[idx] -= cost
-            if ressource_name in new_robots:
-                new_robots[idx] += 1
-            else:
-                new_robots[idx] = 1
-            new_ressources = compute_new_ressources(new_ressources, robots)
-            # New edge -> buying a new robot + extracting ressources
-            successors.append((new_ressources, new_robots))
-    # Then we can also dig for the ressources with the current robots
-    new_ressources = compute_new_ressources(ressources, robots)
-    successors.append((new_ressources, robots))
-    return successors
-
-from copy import copy
-# import json
-def dfs(blueprint, step, ressources, robots):
-    Q = [(0, step, ressources, robots)]
-    best_obsidian = 0
+def solve(o: int, c: int, ob_ore: int, ob_clay: int, g_ore: int, g_obsidian: int, T: int) -> int:
+    """
+    DFS with memoization. Need to explore the entire search space so pretty slow
+    """
+    # How many ressources we have, and how many of each ressources we have
+    # at first: 0 ressources, and 1 robot for ore
+    Q = deque([(0, 0, 0, 0, 1, 0, 0, 0, T)])
+    max_nb_geodes = 0
+    SEEN = set()
+    max_ore_required = max([o, c, ob_ore, g_ore])
     while len(Q) > 0:
-        nb_obsidian, step, ressources, robots = heapq.heappop(Q)
-        if step == 0 and nb_obsidian > best_obsidian:
-            best_obsidian = ressources[3]
-            pp.pprint(ressources)
-            # return ressources[3]
-        else:
-            for ressources, robots in gen_successors(blueprint, ressources, robots):
-                # Q.append((ressources.get("obsidian", 0),  step-1, json.dumps(ressources), json.dumps(robots)))
-                if step-1 > 0:
-                    heapq.heappush(Q, (ressources[3],  step-1, ressources, robots))
-    return best_obsidian
+        no, nc, nob, ng, ro, rc, rob, rg, t = Q.popleft()
+        max_nb_geodes = max(max_nb_geodes, ng)
+        # if len(SEEN) % 100_000 == 0:
+        #     print(len(SEEN), max_nb_geodes, t)
+        if t == 0:
+            continue
+
+        S = (no, nc, nob, ng, ro, rc, rob, rg, t)
+        if S in SEEN:
+            continue
+        SEEN.add(S)
+
+        # If we have the resources, we build a new robot
+        if no >= o:  # ore
+            Q.append((no - o + ro, nc + rc, nob + rob, ng + rg, ro + 1, rc, rob, rg, t - 1))
+        if no >= c:  # clay
+            Q.append((no - c + ro, nc + rc, nob + rob, ng + rg, ro, rc + 1, rob, rg, t - 1))
+        if no >= ob_ore and nc >= ob_clay:  # obsidian
+            Q.append((no - ob_ore + ro, nc - ob_clay + rc, nob + rob, ng + rg, ro, rc, rob + 1, rg, t - 1))
+        if no >= g_ore and nob >= g_obsidian:  # do we have the ressources to build geodes robots?
+            Q.append((no - g_ore + ro, nc + rc, nob - g_obsidian + rob, ng + rg, ro, rc, rob, rg + 1, t - 1))
+        # Extract resources with the existing robots, but do not build a new robot
+        Q.append((no + ro, nc + rc, nob + rob, ng + rg, ro, rc, rob, rg, t - 1))
+    return max_nb_geodes
 
 
-ressources_names = ["ore", "clay", "obsidian", "geode"]
 text = open(f"d19.txt").read().strip()
 text_sample = open(f"d19-sample.txt").read().strip()
-# pp.pprint(parse(text))
-# pp.pprint()
+
 blueprints = parse(text_sample)
-from collections import defaultdict
-robots = defaultdict(int)
-robots["ore"] = 1
-# print(best_spend(blueprints[0], 24, defaultdict(int), robots))
-print(dfs(blueprints[0], 24, (0, 0, 0, 0), (1, 0, 0, 0)))
+part1 = 0
+for idx, o, c, ob_ore, ob_clay, g_ore, g_obsidian in blueprints:
+    print(idx, o, c, ob_ore, ob_clay, g_ore, g_obsidian)
+    max_g = solve(o, c, ob_ore, ob_clay, g_ore, g_obsidian, 24)
+    print(idx, max_g)
+    part1 += idx * max_g
+print(part1)
