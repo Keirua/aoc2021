@@ -1,3 +1,10 @@
+
+# Day 2
+
+Was boring until orlp explain his technique:
+ - https://www.reddit.com/r/adventofcode/comments/zpihwi/comment/j0w57ob/?utm_source=share&utm_medium=web2x&context=3
+ - https://github.com/orlp/aoc2022/blob/master/src/bin/day02.rs
+
 # Day 6
 
 The naive solution is O(n*window_size), but interestingly, it can be solved in O(n) with [a bit trick](https://www.mattkeeter.com/blog/2022-12-10-xor/)
@@ -191,3 +198,9 @@ I tried adding my custom set using integer bit operations, but this was (a bit s
     - if the floodfill lasted forever, he’d conclude the point is on the outside
     - then he used memoization to give a x100 speed boost
  
+## Day 19
+
+BFS + memoization + search tree pruning for me (30s for both parts!…)
+
+Branch-and-bound best-first search over the choices of which robot to build seems much better
+https://www.reddit.com/r/adventofcode/comments/zpihwi/comment/j0vvzgz/?utm_source=share&utm_medium=web2x&context=3
