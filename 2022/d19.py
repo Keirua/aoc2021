@@ -1,3 +1,4 @@
+import heapq
 import pprint
 import re
 from heapq import heappop, heappush
@@ -29,23 +30,25 @@ def parse(text):
 
 
 def compute_new_ressources(ressources, robots):
-    new_ressources = ressources.copy()
-    for k, v in robots.items():
-        new_ressources[k] += v
-    return new_ressources
+    return {k: robots[k] + ressources[k] for k in range(len(ressources_names))}
+    # return {k: robots[k] + ressources.get(k, 0) for k in ressources_names}
 
 
-def gen_successors(blueprint, ressources, robots, step):
+def gen_successors(blueprint, ressources, robots):
     successors = []
     for ressource_name, costs in blueprint.items():
+        idx = ressources_names.index(ressource_name)
         # If we have enough ressources to produce said robots, we can build one:
-        if all([ressources[name] > cost for cost, name in costs]):
-            new_ressources = ressources.copy()
-            new_robots = robots.copy()
+        if all([ressources[ressources_names.index(name)] > cost for cost, name in costs]):
+            new_ressources = copy(ressources)
+            new_robots = copy(robots)
             # new_ressources[name] += 1
             for cost, name in costs:
-                new_ressources[name] -= cost
-            new_robots[ressource_name] += 1
+                new_ressources[idx] -= cost
+            if ressource_name in new_robots:
+                new_robots[idx] += 1
+            else:
+                new_robots[idx] = 1
             new_ressources = compute_new_ressources(new_ressources, robots)
             # New edge -> buying a new robot + extracting ressources
             successors.append((new_ressources, new_robots))
@@ -54,17 +57,23 @@ def gen_successors(blueprint, ressources, robots, step):
     successors.append((new_ressources, robots))
     return successors
 
-
+from copy import copy
+# import json
 def dfs(blueprint, step, ressources, robots):
-    Q = [(step, ressources, robots)]
+    Q = [(0, step, ressources, robots)]
+    best_obsidian = 0
     while len(Q) > 0:
-        print(step)
-        step, ressources, robots = Q.pop()
-        if step == 0:
-            return ressources["obsidian"]
+        nb_obsidian, step, ressources, robots = heapq.heappop(Q)
+        if step == 0 and nb_obsidian > best_obsidian:
+            best_obsidian = ressources[3]
+            pp.pprint(ressources)
+            # return ressources[3]
         else:
-            for ressources, robots in gen_successors(blueprint, ressources, robots, step-1):
-                Q.append((step-1, ressources, robots))
+            for ressources, robots in gen_successors(blueprint, ressources, robots):
+                # Q.append((ressources.get("obsidian", 0),  step-1, json.dumps(ressources), json.dumps(robots)))
+                if step-1 > 0:
+                    heapq.heappush(Q, (ressources[3],  step-1, ressources, robots))
+    return best_obsidian
 
 
 ressources_names = ["ore", "clay", "obsidian", "geode"]
@@ -77,4 +86,4 @@ from collections import defaultdict
 robots = defaultdict(int)
 robots["ore"] = 1
 # print(best_spend(blueprints[0], 24, defaultdict(int), robots))
-print(dfs(blueprints[0], 24, defaultdict(int), robots))
+print(dfs(blueprints[0], 24, (0, 0, 0, 0), (1, 0, 0, 0)))
