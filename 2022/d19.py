@@ -1,4 +1,7 @@
-import re, pprint
+import pprint
+import re
+from heapq import heappop, heappush
+
 pp = pprint.PrettyPrinter(indent=4)
 
 def parse_costs(a):
@@ -23,7 +26,7 @@ def parse(text):
             # pp.pprint(blueprint)
             out.append(blueprint)
     return out
-from functools import lru_cache
+
 
 def compute_new_ressources(ressources, robots):
     new_ressources = ressources.copy()
@@ -32,27 +35,36 @@ def compute_new_ressources(ressources, robots):
     return new_ressources
 
 
-def best_spend(blueprint, step, ressources, robots):
-    if step == 0:
-        return ressources["geode"]
-    else:
-        possible_scores = [ressources["geode"]]
-        for ressource_name, costs in blueprint.items():
-            # If we have enough ressources to produce said robots, we can build one:
-            if all([ressources[name] > cost for cost, name in costs]):
-                new_ressources = ressources.copy()
-                new_robots = robots.copy()
-                # new_ressources[name] += 1
-                for cost, name in costs:
-                    new_ressources[name] -= cost
-                new_robots[ressource_name] += 1
-                new_ressources = compute_new_ressources(new_ressources, robots)
-                # New edge -> buying a new robot
-                possible_scores.append(best_spend(blueprint, step-1, new_ressources, new_robots))
-        # Then we can also dig for the ressources we own without buying right now
-        new_ressources = compute_new_ressources(ressources, robots)
-        possible_scores.append(best_spend(blueprint, step - 1, new_ressources, robots))
-        return max(possible_scores)
+def gen_successors(blueprint, ressources, robots, step):
+    successors = []
+    for ressource_name, costs in blueprint.items():
+        # If we have enough ressources to produce said robots, we can build one:
+        if all([ressources[name] > cost for cost, name in costs]):
+            new_ressources = ressources.copy()
+            new_robots = robots.copy()
+            # new_ressources[name] += 1
+            for cost, name in costs:
+                new_ressources[name] -= cost
+            new_robots[ressource_name] += 1
+            new_ressources = compute_new_ressources(new_ressources, robots)
+            # New edge -> buying a new robot + extracting ressources
+            successors.append((new_ressources, new_robots))
+    # Then we can also dig for the ressources with the current robots
+    new_ressources = compute_new_ressources(ressources, robots)
+    successors.append((new_ressources, robots))
+    return successors
+
+
+def dfs(blueprint, step, ressources, robots):
+    Q = [(step, ressources, robots)]
+    while len(Q) > 0:
+        print(step)
+        step, ressources, robots = Q.pop()
+        if step == 0:
+            return ressources["obsidian"]
+        else:
+            for ressources, robots in gen_successors(blueprint, ressources, robots, step-1):
+                Q.append((step-1, ressources, robots))
 
 
 ressources_names = ["ore", "clay", "obsidian", "geode"]
@@ -64,5 +76,5 @@ blueprints = parse(text_sample)
 from collections import defaultdict
 robots = defaultdict(int)
 robots["ore"] = 1
-print(best_spend(blueprints[0], 24, defaultdict(int), robots))
-
+# print(best_spend(blueprints[0], 24, defaultdict(int), robots))
+print(dfs(blueprints[0], 24, defaultdict(int), robots))
