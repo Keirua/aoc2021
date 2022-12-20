@@ -1,4 +1,18 @@
 
+# Cool links
+
+CSES: many problems https://cses.fi/problemset/
+
+Summary of some cool algorithms & data structures:
+Graph traversal:
+ - bfs/dfs: https://medium.com/nerd-for-tech/dfs-bfs-introduction-26a65fca2344
+ - dijkstra & bellman ford: https://blog.devgenius.io/shortest-path-algorithms-dijkstra-bellman-ford-3b640bdb0449
+ - floyd warshall: https://blog.devgenius.io/shortest-path-algorithm-floyd-warshall-johnsons-632fd7a9f8c7
+Various optimization:
+ - Union Find: https://python.plainenglish.io/union-find-data-structure-in-python-8e55369e2a4f
+ - branch and bound: https://en.wikipedia.org/wiki/Branch_and_bound
+ - simulated annealing: http://katrinaeg.com/simulated-annealing.html
+
 # Day 2
 
 Was boring until orlp explain his technique:
@@ -197,6 +211,8 @@ I tried adding my custom set using integer bit operations, but this was (a bit s
     - he made a floodfill
     - if the floodfill lasted forever, he’d conclude the point is on the outside
     - then he used memoization to give a x100 speed boost
+
+Maybe a usecase for unionfind? https://python.plainenglish.io/union-find-data-structure-in-python-8e55369e2a4f
  
 ## Day 19
 
@@ -204,3 +220,8 @@ BFS + memoization + search tree pruning for me + multiprocessing (18s for both p
 
 Branch-and-bound best-first search over the choices of which robot to build seems much better
 https://www.reddit.com/r/adventofcode/comments/zpihwi/comment/j0vvzgz/?utm_source=share&utm_medium=web2x&context=3
+
+## Day 20
+
+Quite easy with a [`collections.deque`](https://docs.python.org/3/library/collections.html#collections.deque).
+
