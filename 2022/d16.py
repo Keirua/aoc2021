@@ -90,36 +90,55 @@ def part1_dp(curr_valve: str, remaining_time: int = 30, pressure: int = 0, open_
                 values.append(part1_dp(v, remaining_time - dist, pressure + dist * PRESSURE_AT[open_bitmask], open_bitmask))
         return max(values)
 
+@lru_cache(maxsize=None)
+def pressure_at(open_valves):
+    global valves
+    return sum([valves[v].flow_rate for v in open_valves])
 
-def part1_dfs(curr_valve: str, remaining_time: int = 30, pressure: int = 0, open_bitmask: int = 0) -> int:
-    Q = deque([(pressure, remaining_time, open_bitmask, curr_valve)])
-    global useful_valves, mapping, distances
-    SEEN = []
-    while len(Q) > 0:
-        pressure, remaining_time, open_bitmask, curr_valve = Q.popleft()
-        if remaining_time == 0:
-            return pressure
-        state = (pressure, remaining_time, open_bitmask, curr_valve)
-        if state in SEEN:
-            continue
-        SEEN.append(state)
-        # If we can open nothing new we may return the current pressure
-        values = [pressure]
-        # if the current valve is not open, we can open it
-        # We only do so if it adds some water
-        if valves[curr_valve].flow_rate > 0:
-            if not mapping[curr_valve] & open_bitmask:
-                bitmask = mapping[curr_valve] | open_bitmask
-                PRESSURE_AT[bitmask] = PRESSURE_AT[open_bitmask] + valves[curr_valve].flow_rate
-                # the new pressure will take effect next time
-                values.append(part1_dp(curr_valve, remaining_time - 1, pressure + PRESSURE_AT[open_bitmask], bitmask))
-
-        # We can take one step to reach another valve
-        for v in useful_valves - {curr_valve}:
-            dist = distances[curr_valve][v]
-            if remaining_time - dist >= 0:
-                values.append(part1_dp(v, remaining_time - dist, pressure + dist * PRESSURE_AT[open_bitmask], open_bitmask))
-        return max(values)
+# def part1_dfs(curr_valve: str, remaining_time: int = 30, pressure: int = 0) -> int:
+#     Q = deque([(pressure, remaining_time, frozenset(), curr_valve)])
+#     global useful_valves, mapping, distances, valves
+#     SEEN = []
+#     best = 0
+#     while len(Q) > 0:
+#         pressure, remaining_time, open_valves, curr_valve = Q.popleft()
+#         if remaining_time == 0:
+#             best = max(best, pressure)
+#         state = (pressure, remaining_time, open_valves, curr_valve)
+#         # print(state)
+#         if len(SEEN) % 10_000 == 0:
+#             # print(SEEN)
+#             print(len(SEEN))
+#         if state in SEEN:
+#             continue
+#
+#         SEEN.append(state)
+#
+#         # if the current valve is not open, we can open it
+#         # We only do so if it adds some water
+#         if valves[curr_valve].flow_rate > 0:
+#             if not curr_valve in open_valves:
+#                 new_open_valves = frozenset(open_valves | set([curr_valve]))
+#                 # the new pressure will take effect next time
+#                 # values.append(part1_dp(curr_valve, remaining_time - 1, pressure + PRESSURE_AT[open_bitmask], bitmask))
+#                 Q.append((pressure + pressure_at(open_valves), remaining_time - 1, new_open_valves, curr_valve))
+#
+#         # If all the valves are open, no need to move anymore, we can compute the max pressure from here
+#         if len(useful_valves - open_valves) == 0:
+#             # print("everything is open", len(useful_valves - open_valves))
+#             max_pressure = pressure + pressure_at(open_valves)*remaining_time
+#             best = max(best, max_pressure)
+#             continue
+#         else:
+#
+#             # Otherwise we can take one step to reach another useful but not-yet-open valve
+#             for v in useful_valves - {curr_valve} - open_valves:
+#                 dist = distances[curr_valve][v]
+#                 if remaining_time - dist >= 0:
+#                     Q.append((pressure + dist * pressure_at(open_valves), remaining_time - dist, open_valves, v))
+#             # If we can open nothing new we can update the pressures the current pressure
+#             Q.append((pressure + pressure_at(open_valves), remaining_time - 1, open_valves, curr_valve))
+#     return best
 
 
 text = open(f"d16-sample.txt").read().strip()
@@ -155,5 +174,5 @@ def dump_simplified(valves, useful_valves):
 # dump_simplified(valves, useful_valves)
 # dump(valves)
 mapping = extract_name_mapping(valves)
-print(part1_dfs("AA", 30, 0, 0))
+print(part1_dfs("AA", 30, 0))
 # print(part1_dp("AA", 30, 0, 0))
