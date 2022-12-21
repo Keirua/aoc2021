@@ -72,8 +72,60 @@ def part2(lines):
     print(m[vars[operations["root"][2]] ].as_long()) # 3916936880449 is incorrect
     print(m[vars["humn"]].as_long()) # 3916936880449 is incorrect
 
+def part2_binary_search(lines):
+    def get(k, hval=0):
+        if k == "humn":
+            return hval
+        if k not in values.keys():
+            v = OP[operations[k][1]](get(operations[k][0]), get(operations[k][2]))
+            values[k] = v
+        return values[k]
+
+    def unroll(k):
+        if k == "humn":
+            return "h"
+        if k not in values.keys():
+            o = operations[k]
+            if isinstance(o[0], int) and isinstance(o[2], int):
+                v = OP[o[1]](o[0], o[2])
+                values[k] = v
+            else:
+                v = f"({unroll(o[0])} {o[1]} {unroll(o[2])})"
+                values[k] = v
+        return values[k]
+
+
+    # root = fgtg + pbtm
+    values, operations = parse(lines)
+    print(unroll("fgtg")) # through manual inspection: fgtg relies on humn
+    # pbtm is a constant value
+    target = int(eval(unroll("pbtm")))
+    print(target)
+
+def part1_exec(lines):
+    """
+    2 implementations around the same idea found on:
+    https://www.reddit.com/r/adventofcode/comments/zrav4h/comment/j13iq95/"""
+    # while 'root' not in locals():
+    #     for line in lines:
+    #         variable, operation = line.split(':')
+    #         try:
+    #             locals()[variable] = eval(operation)
+    #         except NameError:
+    #             pass;  # variable is not defined yet
+    # print(f"root is: {locals()['root']}")
+    instrs = [l.strip().replace(':', '=') for l in lines]
+    while 'root' not in locals():
+        for l in instrs:
+            try:
+                exec(l)
+            except NameError:
+                pass
+    print(locals()['root'])
+
 lines = open(f"d21.txt").read().splitlines()
 # lines = open(f"d21-sample.txt").read().splitlines()
 part1(lines)
-part2(lines)
+part1_exec(lines)
+# part2_binary_search(lines)
 
