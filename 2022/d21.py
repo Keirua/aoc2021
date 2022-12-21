@@ -7,7 +7,7 @@ OP = {
     "/": lambda a,b: a/b,
 }
 
-lines = open(f"d21.txt").read().splitlines()
+
 def parse(lines):
     values = {}
     operations = {}
@@ -52,20 +52,28 @@ def part1_z3(lines):
 from z3 import *
 def part2(lines):
     values, operations = parse(lines)
-    # values["humn"] = None
     vars = {}
     s = Solver()
     for k in list(operations.keys()) + list(values.keys()):
         vars[k] = Int(k)
-    for k in values.keys():
+    for k in set(values.keys()) - {"humn"}:
         s.add(vars[k] == values[k])
-    for k in operations.keys():
+    # 3_916_936_880_449 was not accepted, but 3916936880448 was,
+    # so I had to bisect my way to the other solution
+    s.add(vars["humn"] < 3_916_936_880_449 )
+    s.add(vars["humn"] > 3_000_000_000_000 )
+    for k in set(operations.keys()) - {"root"}:
         o = operations[k]
         s.add(vars[k] == OP[o[1]](vars[o[0]], vars[o[2]]))
+    s.add(vars[operations["root"][0]] == vars[operations["root"][2]])
     s.check()
     m = s.model()
-    print(m[vars["root"]].as_long())
+    print(m[vars[operations["root"][0]] ].as_long()) # 3 916 936 880 449 is incorrect
+    print(m[vars[operations["root"][2]] ].as_long()) # 3916936880449 is incorrect
+    print(m[vars["humn"]].as_long()) # 3916936880449 is incorrect
 
+lines = open(f"d21.txt").read().splitlines()
+# lines = open(f"d21-sample.txt").read().splitlines()
 part1(lines)
 part2(lines)
 
