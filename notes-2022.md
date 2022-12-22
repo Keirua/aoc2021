@@ -1,6 +1,9 @@
 
-# Cool links
+# Cool stuff
 
+## links
+AoC stats:
+https://jeroenheijmans.github.io/advent-of-code-surveys/
 CSES: many problems https://cses.fi/problemset/
 
 Summary of some cool algorithms & data structures:
@@ -13,13 +16,33 @@ Various optimization:
  - branch and bound: https://en.wikipedia.org/wiki/Branch_and_bound
  - simulated annealing: http://katrinaeg.com/simulated-annealing.html
 
-# Day 2
+## Stuff I learnt
+
+ - frozenset = set + immutable + hashable. So it can be used as a key
+ - `set` can be implemented with bit operations
+ - dijkstra, bfs/dfs, floodfill
+ - stdlib:
+   - heapq
+   - deque
+   - multiprocessing
+   - `from operator import add, sub, mul, floordiv`
+ - regexes:
+   - using backreferences (day21)?
+   - re.findall, re.split
+ - algos:
+   - binary operations (^ = not all, popcount) 
+   - topological sort
+   - graph simplification (floyd warshall)
+   - Constraint solvers. z3, but there cpmpy uses MIP (mixed integer programming) and seems powerfull
+   - using heuristics to prune the search space (branch and bound)
+
+## Day 2
 
 Was boring until orlp explain his technique:
  - https://www.reddit.com/r/adventofcode/comments/zpihwi/comment/j0w57ob/?utm_source=share&utm_medium=web2x&context=3
  - https://github.com/orlp/aoc2022/blob/master/src/bin/day02.rs
 
-# Day 6
+## Day 6
 
 The naive solution is O(n*window_size), but interestingly, it can be solved in O(n) with [a bit trick](https://www.mattkeeter.com/blog/2022-12-10-xor/)
 
@@ -53,14 +76,14 @@ def solve(input:str, N:int) -> int:
 
 Led to some interesting reading: https://stackoverflow.com/questions/109023/count-the-number-of-set-bits-in-a-32-bit-integer#109025
 
-# day 9
+## day 9
 
 I love the pattern of using regexes and one-liners for parsing:
 
 ```python
 moves = [(dir, int(dist)) for (dir, dist) in re.findall(r"([RDLU]) (\d+)", input)]
 ```
-# day 11:
+## day 11:
 
 regex + lambda + eval for the parsing
 
@@ -78,7 +101,7 @@ return cls(
 ```
 
 
-# day 12: dijkstra
+## day 12: dijkstra
 
 Dijkstra with an heapq for faster search, then dijkstra with multiple starting point.
 
@@ -121,7 +144,7 @@ def dijkstra(grid, start=(0, 0), end=None):
     return dist, prev
 ```
 
-# day 13: sorting according to a custom function
+## day 13: sorting according to a custom function
 
 I cheated and parsed with `eval`. My comparison function cannot be used in `sorted` directly:
 
@@ -139,11 +162,11 @@ print(p2)
  - he made a custom parser, kudos to him
  - he implemented `__lt__` in order to use `sort` natively
 
-# Day 14:
+## Day 14:
 
 Fun automaton, many nice visualizations on reddit.
 
-# Day 15:
+## Day 15:
 
 From part2 it was pretty clear that a bruteforce solution wouldn’t work fast, or fast enough with what I had.
 It was pretty cool (though overkill probably ;)) to use z3 to solve part 2
@@ -218,6 +241,28 @@ Maybe a usecase for unionfind? https://python.plainenglish.io/union-find-data-st
 
 BFS + memoization + search tree pruning for me + multiprocessing (18s for both parts!…)
 
+```python
+from multiprocessing import Process, Queue
+def solve_mp(queue, blueprint, t):
+    idx, o, c, ob_ore, ob_clay, g_ore, g_obsidian = blueprint
+    nb_geodes = solve(o, c, ob_ore, ob_clay, g_ore, g_obsidian, t)
+    queue.put((idx, nb_geodes))
+
+def p1_mp(blueprints):
+    queue = Queue()
+    procs = []
+    for line in blueprints:
+        proc = Process(target=solve_mp, args=(queue, line, 24))
+        proc.start()
+        procs.append((proc, queue))
+    total = 0
+    for p, q in procs:
+        p.join()  # this blocks until the process terminates
+        idx, nb_geodes = q.get()
+        total += idx*nb_geodes
+    return total
+```
+
 Branch-and-bound best-first search over the choices of which robot to build seems much better
 https://www.reddit.com/r/adventofcode/comments/zpihwi/comment/j0vvzgz/?utm_source=share&utm_medium=web2x&context=3
 
@@ -225,3 +270,22 @@ https://www.reddit.com/r/adventofcode/comments/zpihwi/comment/j0vvzgz/?utm_sourc
 
 Quite easy with a [`collections.deque`](https://docs.python.org/3/library/collections.html#collections.deque).
 
+## Day 21
+
+Easy but nice. Part 1 = simple tree traversal. Part 2 with z3. There was a nice hack with eval too.
+
+
+I could have used the standard library instead of writing my own lambdas: 
+```python
+from operator import add, sub, mul, floordiv
+operations = {'-': sub, '+': add, '/': floordiv, '*': mul}
+```
+I found two nice solutions:
+
+
+ - reversing the tree to isolate the variable, then solve (TODO: implement this)
+https://topaz.github.io/paste/#XQAAAQArBwAAAAAAAAAzHIoib6qZzo2OBd79LRjVLyEQ+mpAR5Uve8TJXQOY6DLfIpGeBRXQbJHs0UDBBvpxKQMLLLiWoNdX9S3YkBL5RwN25jUGDuD1SWEasASDHwIkif2uPp6YIwXf2sK/YXD6X+eeD/aYr70551yXVFu3Sbw7VHlmMFE4N+/7HhoDDwtkJsnzLIJBpvelIfDNGxpbYzV+FR3ztABqpyv05mIKcyVOG2lQhAIETykXSmnbF6M7MNxvXS3VGQoXDifWMQD4DdfITposOwBJ1RHFgVLM0QsENGxooJo0MANmFLW5j9z4L/1tRbgadbCLst+TRyeI81E9u1bgW/LEF6QSOUtPBz4nQfDvNhHPwjwWJYX/xA6sCzfaX1A9HL4ACeUxhrSwKDk+rsBJTo6mzo2sDenXU0N0309ICFxDN4ZdMaQ5hZjVcyr559zcB71kHWMwfb4utpMM2+Lz3cUgXOVL0K9TNH1FqXnwuD7VGPaye/13mf6mi96o0cTi70QKhKhdez4p/8CnYw4sqp9Ac3y4gjjMi91j65NStIWznp89j+9oO/+j6Mjce9y02msal3GsLRRVrxml9i3cRXizVcZVo8zduWDPw7muB4IW4H1/6trQdeMbQpkhLIvxyr1t5zVgMf9Beg1yUI/TKr8BckGDVVFbuX5jCT8seDVqNmU37V0kSi7otXkZjJDtpeE6kgcxj0w9N2jUdg4lDGDnOgeCpy1ylhzA10arxelBs/+hNrOkp6l8sJkMpgIRmGQpK9YLeRJcWWIT58gCtdvNroh4VcNHuySNbwjRUt+Ydy2jw2P3p8f+Z0nFmhA1z8z4xlI5o3ZerQxDMZ69v8WL+35XMshQsxUiXNKjRvnySqiCPwNcrmHIeRDwNzqmU8Ek/B14c7TfCfnl1LIRpHE0kQYh//Y+Ipw=
+ - replace human with 1j (the complex number) so that python deal with numbers on its own.
+Works because it’s used only once, not 2 multiplications by human
+Then either user a solver by replacing the imaginary part, or solve as is.
+https://www.reddit.com/r/adventofcode/comments/zrav4h/comment/j133ko6/
