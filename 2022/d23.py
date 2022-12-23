@@ -1,16 +1,13 @@
 import pprint as pp
-
+from collections import defaultdict
 
 def parse(lines):
-    elves = []
+    elves = set()
     for y, l in enumerate(lines):
         for x in range(len(l)):
             if l[x] == "#":
-                elves.append((x, y))
+                elves.add((x, y))
     return elves
-
-
-from collections import defaultdict
 
 
 def partial_update(x, y, elves, offset, new_elves):
@@ -56,7 +53,7 @@ def update(elves, direction):
     for k, v in new_elves.items():
         if len(v) == 1:
             elves.remove(v[0])
-            elves.append(k)
+            elves.add(k)
 
     return elves, (direction+1)%4
 
@@ -96,12 +93,12 @@ def part1(elves):
 
     min_x, max_x = minmax([x for (x, y) in elves])
     min_y, max_y = minmax([y for (x, y) in elves])
-    print((max_y - min_y + 1) * (max_x - min_x + 1) - len(elves))
-    print((max_y - min_y + 1) * (max_x - min_x + 1))
+
+    return (max_y - min_y + 1) * (max_x - min_x + 1) - len(elves)
 
 
 # lines = open(f"d23-sample.txt").read().strip().splitlines()
 lines = open(f"d23.txt").read().strip().splitlines()
 elves = parse(lines)
 
-part1(elves)  # 5372 is too high
+print(part1(elves))
