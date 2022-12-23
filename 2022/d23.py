@@ -13,7 +13,7 @@ def parse(lines):
 from collections import defaultdict
 
 
-def partial_update(x, y, elves, direction, new_elves, next_direction):
+def partial_update(x, y, elves, offset, new_elves):
     N = x, y - 1
     NE = x + 1, y - 1
     NW = x - 1, y - 1
@@ -23,56 +23,42 @@ def partial_update(x, y, elves, direction, new_elves, next_direction):
     W = x - 1, y
     E = x + 1, y
     if all((other not in elves for other in [N, NE, NW, S, SE, SW, W, E])):
-        return new_elves, next_direction
+        return new_elves
     ORDER = "NSWE"
-    offset = ORDER.index(direction)
     order = [ORDER[(offset + i) % 4] for i in range(4)]
-    # print(order)
-    # print(len(elves))
 
     for direction in order:
         if direction == "N":
             if not (N in elves or NE in elves or NW in elves):
                 new_elves[N].append((x, y))
-                if next_direction is None:
-                    next_direction = "S"
                 break
-
         if direction == "S":
             if not (S in elves or SE in elves or SW in elves):
                 new_elves[S].append((x, y))
-                if next_direction is None:
-                    next_direction = "W"
                 break
         if direction == "W":
             if not (W in elves or NW in elves or SW in elves):
                 new_elves[W].append((x, y))
-                if next_direction is None:
-                    next_direction = "E"
                 break
         if direction == "E":
             if not (E in elves or NE in elves or SE in elves):
                 new_elves[E].append((x, y))
-                if next_direction is None:
-                    next_direction = "N"
                 break
-    return new_elves, next_direction
+    return new_elves
 
 
 def update(elves, direction):
     new_elves = defaultdict(list)
-    next_direction = None
-    # print(len(elves))
     # First half: where to go?
     for x, y in elves:
-        new_elves, next_direction = partial_update(x, y, elves, direction, new_elves, next_direction)
-
+        new_elves = partial_update(x, y, elves, direction, new_elves)
+    # Second half: who goes there
     for k, v in new_elves.items():
         if len(v) == 1:
             elves.remove(v[0])
             elves.append(k)
 
-    return elves, next_direction
+    return elves, (direction+1)%4
 
 
 def minmax(l):
@@ -98,16 +84,15 @@ def plot(elves):
 
     for x, y in elves:
         arr[y - min_y][x - min_x] = "#"
-    # pp.pprint(arr)
     return "\n".join(["".join(l) for l in arr])
 
 
 def part1(elves):
-    direction = "N"
+    direction = 0
     for i in range(10):
         elves, direction = update(elves, direction)
-        print(f"Step {i}")
-        print(plot(elves))
+        # print(f"Step {i}")
+        # print(plot(elves))
 
     min_x, max_x = minmax([x for (x, y) in elves])
     min_y, max_y = minmax([y for (x, y) in elves])
@@ -115,13 +100,8 @@ def part1(elves):
     print((max_y - min_y + 1) * (max_x - min_x + 1))
 
 
-# lines = open(f"d23.txt").read().strip().splitlines()
 # lines = open(f"d23-sample.txt").read().strip().splitlines()
-lines = open(f"d23-sample2.txt").read().strip().splitlines()
+lines = open(f"d23.txt").read().strip().splitlines()
 elves = parse(lines)
-# pp.pprint(elves)
-# print(plot(elves))
-# elves, direction = update(elves, "N")
-# print(f"Step 1")
-# print(plot(elves))
+
 part1(elves)  # 5372 is too high
