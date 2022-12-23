@@ -1,6 +1,7 @@
 import pprint as pp
 from collections import defaultdict
 
+
 def parse(lines):
     elves = set()
     for y, l in enumerate(lines):
@@ -46,6 +47,7 @@ def partial_update(x, y, elves, offset, new_elves):
 
 def update(elves, direction):
     new_elves = defaultdict(list)
+    moved = False
     # First half: where to go?
     for x, y in elves:
         new_elves = partial_update(x, y, elves, direction, new_elves)
@@ -54,8 +56,9 @@ def update(elves, direction):
         if len(v) == 1:
             elves.remove(v[0])
             elves.add(k)
+            moved = True
 
-    return elves, (direction+1)%4
+    return elves, (direction + 1) % 4, moved
 
 
 def minmax(l):
@@ -87,9 +90,7 @@ def plot(elves):
 def part1(elves):
     direction = 0
     for i in range(10):
-        elves, direction = update(elves, direction)
-        # print(f"Step {i}")
-        # print(plot(elves))
+        elves, direction, _ = update(elves, direction)
 
     min_x, max_x = minmax([x for (x, y) in elves])
     min_y, max_y = minmax([y for (x, y) in elves])
@@ -97,8 +98,20 @@ def part1(elves):
     return (max_y - min_y + 1) * (max_x - min_x + 1) - len(elves)
 
 
-# lines = open(f"d23-sample.txt").read().strip().splitlines()
+def part2(elves):
+    direction = 0
+    n = 0
+    while True:
+        n += 1
+        elves, direction, moved = update(elves, direction)
+        if not moved:
+            break
+    return n
+
+
 lines = open(f"d23.txt").read().strip().splitlines()
+# lines = open(f"d23-sample2.txt").read().strip().splitlines()
 elves = parse(lines)
 
 print(part1(elves))
+print(part2(elves))
