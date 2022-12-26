@@ -47,12 +47,26 @@ class Grid:
             next_blizz.append((nx, ny, c))
         return next_blizz
 
-    def print_grid(self, blizzards):
+    # def print_grid(self, blizzards):
+    #     out = [["." for _ in range(self.W)] for _ in range(self.H)]
+    #     for (x, y) in self.walls:
+    #         out[y][x] = "#"
+    #     out[self.start_y][self.start_x] = 'S'
+    #     out[self.end_y][self.end_x] = 'E'
+    #     counter = Counter([(x, y) for (x, y, c) in blizzards])
+    #     for (x, y, c) in blizzards:
+    #         if counter[(x, y)] == 1:
+    #             out[y][x] = c
+    #     for (x, y), v in counter.items():
+    #         if v > 1:
+    #             out[y][x] = str(v)
+    #
+    #     return "\n".join(["".join(l) for l in out])
+
+    def dbg(self, blizzards, sx, sy):
         out = [["." for _ in range(self.W)] for _ in range(self.H)]
         for (x, y) in self.walls:
             out[y][x] = "#"
-        out[self.start_y][self.start_x] = 'S'
-        out[self.end_y][self.end_x] = 'E'
         counter = Counter([(x, y) for (x, y, c) in blizzards])
         for (x, y, c) in blizzards:
             if counter[(x, y)] == 1:
@@ -60,32 +74,10 @@ class Grid:
         for (x, y), v in counter.items():
             if v > 1:
                 out[y][x] = str(v)
+        out[sy][sx] = "E"
 
         return "\n".join(["".join(l) for l in out])
 
-    def dbg(self, blizzards, x, y):
-        out = [["." for _ in range(self.W)] for _ in range(self.H)]
-        for (x, y) in self.walls:
-            out[y][x] = "#"
-        counter = Counter([(x, y) for (x, y, c) in blizzards])
-        for (x, y, c) in blizzards:
-            if counter[(x, y)] == 1:
-                out[y][x] = c
-        for (x, y), v in counter.items():
-            if v > 1:
-                out[y][x] = str(v)
-        out[y][x] = "E"
-
-        return "\n".join(["".join(l) for l in out])
-
-    # def all_movable_coords(self):
-    #     "useless"
-    #     movable = []
-    #     for x in range(self.W):
-    #         for y in range(self.H):
-    #             if (x,y) not in self.walls:
-    #                 movable.append((x,y))
-    #     return movable
 
     def get_blizzard_at(self, t):
         if t in self.KNOWN_BLIZZARDS:
@@ -103,16 +95,16 @@ class Grid:
         """
         Q = [(0, 0, (self.start_x, self.start_y))]
         DIST = {(x, y, 0): 1000000000000000 for (x, y) in self.movable}
+        DIST[(g.start_x, g.start_y, 0)] = 0
         PREV = {(x, y, 0): None for (x, y) in self.movable}
         while len(Q) > 0:
             min_dist, t, (x, y) = heappop(Q)
             if (x, y) == (self.end_x, self.end_y):
-                print(t, x, y)
-                return t, PREV
-            # We have a better path already
+                break
+            # Do we have a better path already?
             if (x, y, t) in DIST and DIST[(x, y, t)] < min_dist:
                 continue
-            # Generate the possible next moves
+            # Generate the possible next moves (4 cardinal directions + don’t move)
             next_blizzard = self.get_blizzard_at(t + 1)
             for (dx, dy) in [(-1, 0), (1, 0), (0, -1), (0, 1), (0, 0)]:
                 nx, ny = x + dx, y + dy
@@ -123,28 +115,30 @@ class Grid:
                         PREV[(nx, ny, t + 1)] = (x, y)
                         heappush(Q, (new_dist, t + 1, (nx, ny)))
 
+        return t, PREV
+
+
+def find_history(prev, t):
+    history = [(g.end_x, g.end_y)]
+    parent = prev[(g.end_x, g.end_y, t)]
+    while parent is not None:
+        history.append(parent)
+        (x, y) = parent
+        parent = prev[(x, y, t-1)]
+        t -= 1
+    return history[::-1]
 
 lines = open(f"d24.txt").read().strip().splitlines()
 lines = open(f"d24-sample.txt").read().strip().splitlines()
-lines = open(f"d24-sample2.txt").read().strip().splitlines()
+# lines = open(f"d24-sample2.txt").read().strip().splitlines()
 g = Grid(lines)
-pp.pprint(g.blizzards)
+# pp.pprint(g.blizzards)
 t, prev = g.solve()
-history = []
-for i in range(10):
-    idx = (6, 5, i)
-    if idx in prev.keys():
-        print(idx, prev[idx])
-# x, y = prev[(g.end_y, g.end_x, t+1)]
-# while (x, y) != (g.start_x, g.start_y):
-#     history.append((x, y))
-#     (x, y) = prev[(x, y, t-1)]
-#     t -= 1
+print(t)
 
-# print(history)
-# for i in range(10):
-#     print(g.print_grid(g.blizzards))
-#     g.blizzards = g.next_blizzards(g.blizzards)
-    # print(g.blizzards)
-#     print()
-# pp.pprint(lines)
+history = find_history(prev, t)
+for t, h in enumerate(history):
+    x, y = h
+    # print(g.dbg(g.get_blizzard_at(t), g.start_x, g.start_y))
+    print(g.dbg(g.get_blizzard_at(t+1), x, y))
+    print()
