@@ -6,3 +6,5 @@ wip/
 __pycache__/
 .env/
 .hypothesis/
+aoc2022-rs/target/*
+aoc2022-rs/data/*
