@@ -98,14 +98,14 @@ def part1_dp(curr_valve: str, remaining_time: int = 30, pressure: int = 0, open_
         return max(values)
 
 @lru_cache(maxsize=None)
-def part2_dp(curr_valve: str, curr_elephant:str, t: int = 30, pressure: int = 0, open_bitmask: int = 0) -> int:
+def part2_dp(curr_valve: str, curr_elephant:str, t: int, pressure: int, ppt, open_valves) -> int:
     global useful_valves, mapping, distances, valves, USEFUL_BITMASK
     if t == 0:
         return pressure
     else:
         # If we have open everything, we can short-circuit
-        if open_bitmask ^ USEFUL_BITMASK == 0:
-            return pressure + t * PRESSURE_AT[open_bitmask]
+        if open_valves == useful_valves:
+            return pressure + t * ppt
         # Otherwise:
         #  - player open a valve, elephant moves to another valve
         #  - player moves, elephant open
@@ -114,39 +114,38 @@ def part2_dp(curr_valve: str, curr_elephant:str, t: int = 30, pressure: int = 0,
         # If we can open nothing new we may return the current pressure
         values = [pressure]
         remaining_useful_valves = useful_valves - {curr_valve, curr_elephant}
-        useful_valves_for_elephant = [v for v in remaining_useful_valves if valve_id(v) & open_bitmask == 0 and (t - distances[curr_elephant][v]) > 0]
-        useful_valves_for_player = [v for v in remaining_useful_valves if valve_id(v) & open_bitmask == 0 and (t - distances[curr_valve][v]) > 0]
+        useful_valves_for_elephant = [v for v in remaining_useful_valves if v not in open_valves and (t - distances[curr_elephant][v]) > 0]
+        useful_valves_for_player = [v for v in remaining_useful_valves if v not in open_valves and (t - distances[curr_valve][v]) > 0]
 
         # if the current valve is not open, we can open it
         # We only do so if it adds some water
         if valves[curr_valve].flow_rate > 0:
-            if not mapping[curr_valve] & open_bitmask:
-                bitmask = mapping[curr_valve] | open_bitmask
-                PRESSURE_AT[bitmask] = PRESSURE_AT[open_bitmask] + valves[curr_valve].flow_rate
+            if curr_valve not in open_valves:
+                open_valves.add(curr_valve)
+                ppt += valves[curr_valve].flow_rate
                 # the new pressure will take effect next time, meanwhile the elephant can move
-                for v in useful_valves_for_elephant:
-                    values.append(part2_dp(curr_valve, v, t - 1, pressure + PRESSURE_AT[open_bitmask], bitmask))
+                # for v in useful_valves_for_elephant:
+                values.append(part2_dp(curr_valve, curr_elephant, t - 1, pressure + ppt, ppt, open_valves))
 
         if valves[curr_elephant].flow_rate > 0:
-            if not mapping[curr_elephant] & open_bitmask:
-                bitmask = mapping[curr_elephant] | open_bitmask
-                PRESSURE_AT[bitmask] = PRESSURE_AT[open_bitmask] + valves[curr_elephant].flow_rate
+            if curr_elephant not in open_valves:
+                open_valves.add(curr_elephant)
+                ppt += valves[curr_elephant].flow_rate
                 # the new pressure will take effect next time, meanwhile the player can move
-                for v in useful_valves_for_player:
-                    values.append(part2_dp(v, curr_elephant, t - 1, pressure + PRESSURE_AT[open_bitmask], bitmask))
+                # for v in useful_valves_for_player:
+                values.append(part2_dp(curr_valve, curr_elephant, t - 1, pressure + ppt, ppt, open_valves))
         # print(len(useful_valves_for_player))
         # print(len(useful_valves_for_elephant))
         # We can take one step to reach another valve
         for v in useful_valves_for_player:
             dist = distances[curr_valve][v]
-            nv = part2_dp(v, curr_elephant, t - dist, pressure + dist * PRESSURE_AT[open_bitmask], open_bitmask)
+            nv = part2_dp(v, curr_elephant, t - dist, pressure + dist * ppt, ppt, open_valves)
             values.append(nv)
 
         for v in useful_valves_for_elephant:
             dist = distances[curr_elephant][v]
-            nv = part2_dp(curr_valve, v, t - dist, pressure + dist * PRESSURE_AT[open_bitmask], open_bitmask)
+            nv = part2_dp(curr_valve, v, t - dist, pressure + dist * ppt, ppt, open_valves)
             values.append(nv)
-        # print(len(values))
 
         return max(values)
 
@@ -157,7 +156,7 @@ def pressure_at(open_valves):
 
 
 text = open(f"d16-sample.txt").read().strip()
-# text = open(f"d16.txt").read().strip()
+text = open(f"d16.txt").read().strip()
 valves = parse(text)
 # pp.pprint(valves)
 # We need to simplify the graph so that we don’t move to useless locations,
@@ -199,4 +198,4 @@ def dump_simplified(valves, useful_valves):
 # dump(valves)
 mapping = extract_name_mapping(valves)
 # print(part1_dp("AA", 30, 0, 0))
-print(part2_dp("AA", "AA", 26, 0, 0))
+print(part2_dp("AA", "AA", 26, 0, 0, set()))
