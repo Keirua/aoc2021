@@ -16,9 +16,9 @@ Various optimization:
  - branch and bound: https://en.wikipedia.org/wiki/Branch_and_bound
  - simulated annealing: http://katrinaeg.com/simulated-annealing.html
 
-## Stuff I learnt
+## Stuff I learnt/used
 
- - frozenset = set + immutable + hashable. So it can be used as a key
+ - frozenset = set + immutable + hashable. So it can be used as a key in hashes.
  - `set` can be implemented with bit operations
  - dijkstra, bfs/dfs, floodfill
  - stdlib:
@@ -29,18 +29,21 @@ Various optimization:
  - regexes:
    - using backreferences (day21)?
    - re.findall, re.split
- - algos:
-   - binary operations (^ = not all, popcount) 
-   - topological sort
-   - graph simplification (floyd warshall)
-   - Constraint solvers. z3, but there cpmpy uses MIP (mixed integer programming) and seems powerfull
-   - using heuristics to prune the search space (branch and bound)
+ - Some algos:
+   - Binary operations (^ = not all, popcount) 
+   - Topological sort
+   - Graph simplification (floyd warshall)
+   - Constraint solvers. z3, but there cpmpy uses MIP (mixed integer programming) that seems powerful
+   - Using heuristics to prune the search space (branch and bound)
 
 ## Day 2
 
-Was boring until orlp explain his technique:
- - https://www.reddit.com/r/adventofcode/comments/zpihwi/comment/j0w57ob/?utm_source=share&utm_medium=web2x&context=3
- - https://github.com/orlp/aoc2022/blob/master/src/bin/day02.rs
+Solving the Rock/Paper/Scissors problem was boring until `orlp` explained his technique:
+ - in a [detailled blog post](https://orlp.net/blog/worlds-smallest-hash-table/). Overengineered, hardcore low level, there is a public for these things.
+ - in a [reddit summary](https://www.reddit.com/r/adventofcode/comments/zpihwi/comment/j0w57ob/)
+ - here is [the code](https://github.com/orlp/aoc2022/blob/master/src/bin/day02.rs)
+
+Orlp is also the author of [Glidesort](https://github.com/orlp/glidesort), a stable sorting algorithm which is both fast with data with patterns and random data.
 
 ## Day 6
 
@@ -99,7 +102,6 @@ return cls(
     on_false=int(lines[5].split()[-1])
 )
 ```
-
 
 ## day 12: dijkstra
 
@@ -161,6 +163,8 @@ print(p2)
 [mjpieters](https://github.com/mjpieters/adventofcode/blob/master/2022/Day%2013.ipynb) is way more idiomatic:
  - he made a custom parser, kudos to him
  - he implemented `__lt__` in order to use `sort` natively
+
+All of `mjpieters` solutions are worth having a look. He is writing modern, idiomatic python code.
 
 ## Day 14:
 
@@ -239,7 +243,7 @@ Maybe a usecase for unionfind? https://python.plainenglish.io/union-find-data-st
  
 ## Day 19
 
-BFS + memoization + search tree pruning for me + multiprocessing (18s for both parts!…)
+BFS + memoization + search tree pruning for me + multiprocessing (18s for both parts!… Python was far from ideal here.).
 
 ```python
 from multiprocessing import Process, Queue
@@ -274,14 +278,13 @@ Quite easy with a [`collections.deque`](https://docs.python.org/3/library/collec
 
 Easy but nice. Part 1 = simple tree traversal. Part 2 with z3. There was a nice hack with eval too.
 
-
 I could have used the standard library instead of writing my own lambdas: 
 ```python
 from operator import add, sub, mul, floordiv
 operations = {'-': sub, '+': add, '/': floordiv, '*': mul}
 ```
-I found two nice solutions:
 
+I found two nice solutions:
 
  - reversing the tree to isolate the variable, then solve (TODO: implement this)
 https://topaz.github.io/paste/#XQAAAQArBwAAAAAAAAAzHIoib6qZzo2OBd79LRjVLyEQ+mpAR5Uve8TJXQOY6DLfIpGeBRXQbJHs0UDBBvpxKQMLLLiWoNdX9S3YkBL5RwN25jUGDuD1SWEasASDHwIkif2uPp6YIwXf2sK/YXD6X+eeD/aYr70551yXVFu3Sbw7VHlmMFE4N+/7HhoDDwtkJsnzLIJBpvelIfDNGxpbYzV+FR3ztABqpyv05mIKcyVOG2lQhAIETykXSmnbF6M7MNxvXS3VGQoXDifWMQD4DdfITposOwBJ1RHFgVLM0QsENGxooJo0MANmFLW5j9z4L/1tRbgadbCLst+TRyeI81E9u1bgW/LEF6QSOUtPBz4nQfDvNhHPwjwWJYX/xA6sCzfaX1A9HL4ACeUxhrSwKDk+rsBJTo6mzo2sDenXU0N0309ICFxDN4ZdMaQ5hZjVcyr559zcB71kHWMwfb4utpMM2+Lz3cUgXOVL0K9TNH1FqXnwuD7VGPaye/13mf6mi96o0cTi70QKhKhdez4p/8CnYw4sqp9Ac3y4gjjMi91j65NStIWznp89j+9oO/+j6Mjce9y02msal3GsLRRVrxml9i3cRXizVcZVo8zduWDPw7muB4IW4H1/6trQdeMbQpkhLIvxyr1t5zVgMf9Beg1yUI/TKr8BckGDVVFbuX5jCT8seDVqNmU37V0kSi7otXkZjJDtpeE6kgcxj0w9N2jUdg4lDGDnOgeCpy1ylhzA10arxelBs/+hNrOkp6l8sJkMpgIRmGQpK9YLeRJcWWIT58gCtdvNroh4VcNHuySNbwjRUt+Ydy2jw2P3p8f+Z0nFmhA1z8z4xlI5o3ZerQxDMZ69v8WL+35XMshQsxUiXNKjRvnySqiCPwNcrmHIeRDwNzqmU8Ek/B14c7TfCfnl1LIRpHE0kQYh//Y+Ipw=

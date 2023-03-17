@@ -117,6 +117,7 @@ Like everybody I guess:
 
 There is a generalization using matrix exponentation: https://old.reddit.com/r/adventofcode/comments/r9z49j/2021_day_6_solutions/hnfp9r9/
 It has a log(n) implementation: https://www.geeksforgeeks.org/matrix-exponentiation/ or https://www.hackerearth.com/practice/notes/matrix-exponentiation-1/.
+https://gist.github.com/rain-1/51944f4ed9318c320cfa0af2a03e6808
 This approach might makes it possible to do the "upping the ante" part faster (n = 10k, n=150k), but the current solution is fast enough (0.37s)
 Another approach is to find a generalization of the recurrence relation using a linear algebra package:
 https://www.reddit.com/r/adventofcode/comments/ratue0/2021_day_6_fricas_solution_via_finding_a/
